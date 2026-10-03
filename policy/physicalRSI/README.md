@@ -1,62 +1,22 @@
-# PhysicalRSI execution skills for XPolicyLab
+# PhysicalRSI
 
-**Contributor:** HKU MMLAB | **Project:** [PhysicalRSI v2](https://yanming03.github.io/PhysicalRSI/v2/) | **arXiv:** Not specified | **Original code:** [PhysicalRSI](https://github.com/yanming03/PhysicalRSI)
+**Contributor:** HKU MMLAB | **Project:** [PhysicalRSI](https://yanming03.github.io/PhysicalRSI/v2/) | **Original code:** [yanming03/PhysicalRSI](https://github.com/yanming03/PhysicalRSI)
 
-This adapter exposes one XPolicyLab entrypoint backed by the PhysicalRSI skill
-library. Internal capabilities live in `PhysicalRSI_baselines/robodojo/skills/`;
-they are not installed as separate XPolicyLab entries.
-
-The runtime exposes one skill library containing pi05, pi05-sparse-memory and
-code-policy implementations, with separate weight identities recorded explicitly.
-At episode start an API-backed agent reads instructions, observations and immutable
-task-aware memory, then chooses a registered, configured skill composition. That
-choice determines the actual execution skill. The composition remains stable until
-reset; observations, policy instructions and actions are not rewritten. Missing
-credentials or an invalid choice stop execution without a fallback.
-
-
-Supported benchmark: RoboDojo; embodiment: `arx_x5`. Neural skills use joint actions; frozen code programs declare their original joint or EEF action contract. Evaluation must use the matching action type.
+PhysicalRSI combines an API-backed agent, frozen task-aware memory and an execution skill library for RoboDojo ARX X5. At episode start, the agent selects a registered skill composition that remains active until reset. The library contains pi05, pi05-sparse-memory and code-policy programs, with their internal weight identities recorded separately. Runtime source is included under `runtime/`.
 
 Shared conventions — argument meanings, checkpoint naming, split-machine deployment, `EVAL_ENV_TYPE` — are documented in the [XPolicyLab README](../../README.md). Official results: [RoboDojo LeaderBoard](https://robodojo-benchmark.com/LeaderBoard).
 
-
 ## Installation
 
-From the installed `policy/physicalRSI` directory:
+From `policy/physicalRSI`:
 
 ```bash
 python download_assets.py --output skill-assets
 uv sync --project skill-assets/implementations/openpi --frozen --no-dev
 bash install.sh "$PWD/skill-assets/implementations/openpi/.venv/bin/python"
-```
 
-The downloader checks every archive part against `assets.json` before extraction.
-OpenPI includes the sparse visual-memory architecture and both model configurations.
-Runtime source is bundled under `runtime/`; no editable PhysicalRSI checkout is required.
-For an existing compatible policy environment, run `install.sh /path/to/python`.
-
-Copy `runtime/PhysicalRSI_baselines/robodojo/configs/skill_library.example.json` and set
-checkpoint paths, model configuration, agent endpoint, and agent model. The example enables both neural skills; supply both checkpoint paths.
-Enable code-policy only after supplying its validated assembly and runtime bindings.
-Credentials belong in the environment, not in this configuration.
-
-After installing the code-program archive, bind its verified templates to the
-installation directory. This creates `programs.json` without changing the archive:
-
-```bash
 PYTHONPATH=runtime python -m PhysicalRSI_baselines.robodojo.prepare_code_programs \
   "$PWD/skill-assets/implementations/code-skills"
-```
-
-The code-program archive contains seven checksummed parts. Its perception and
-motion-planning services require the dependencies included with each program,
-in addition to the lightweight adapter environment.
-
-Alternatively, generate a configuration from installed assets. This registers all
-code programs present in an installed `implementations/code-skills/programs.json`
-manifest and checks their declared source hashes:
-
-```bash
 PYTHONPATH=runtime python -m PhysicalRSI_baselines.robodojo.configure_skills \
   --assets "$PWD/skill-assets" \
   --python "$PWD/skill-assets/implementations/openpi/.venv/bin/python" \
@@ -64,61 +24,32 @@ PYTHONPATH=runtime python -m PhysicalRSI_baselines.robodojo.configure_skills \
   --endpoint https://YOUR_API_HOST/v1/chat/completions --model YOUR_VISION_MODEL
 ```
 
-The generator refuses to overwrite an existing configuration. Without an installed
-code-program manifest it configures the two neural skills only; inspect its printed
-skill list before evaluation.
-
-The frozen program services retain their original sidecar ports. Run one code
-program service per host or isolated container to keep sidecar ports isolated.
-
-
-```bash
-export PHYSICALRSI_SKILL_CONFIG=/absolute/path/to/skills.json
-export PHYSICALRSI_AGENT_API_KEY=...  # OPENAI_API_KEY or ARK_API_KEY also accepted
-export PHYSICALRSI_EVAL_OUTPUT=/path/to/run-evidence
-PYTHONPATH=runtime python -m PhysicalRSI_baselines.robodojo.skill_preflight "$PHYSICALRSI_SKILL_CONFIG"
-```
-
-The agent endpoint uses chat completions with image input. This protocol must
-match the chosen provider; credentials alone do not establish API compatibility.
+The downloader verifies the source and weight archives against `assets.json`. Code programs include their perception and motion-planning dependencies. Configuration generation registers the installed programs and both neural skills; it refuses to overwrite an existing configuration.
 
 ## Data Processing
 
-Unsupported in this eval-only integration. No data conversion is needed for inference.
+Not required for this eval-only adapter. `process_data.sh` is omitted.
 
 ## Training
 
-This integration performs inference and evaluation only. Data processing and
-training are unsupported; `process_data.sh` and `train.sh` are intentionally absent.
-Checkpoint architecture/configuration metadata is used solely for model loading.
-
+Not supported by this integration. `train.sh` is omitted.
 
 ## Evaluation
 
-The scripts use XPolicyLab's server/client lifecycle and ten-argument interface:
-
 ```bash
-EVAL_ENV_TYPE=debug bash /path/to/XPolicyLab/policy/physicalRSI/eval.sh \
+export PHYSICALRSI_SKILL_CONFIG="$PWD/skills.json"
+export PHYSICALRSI_AGENT_API_KEY=YOUR_API_KEY
+export PHYSICALRSI_EVAL_OUTPUT="$PWD/results"
+PYTHONPATH=runtime python -m PhysicalRSI_baselines.robodojo.skill_preflight "$PHYSICALRSI_SKILL_CONFIG"
+
+EVAL_ENV_TYPE=debug bash eval.sh \
   RoboDojo general_pickup skill-library arx_x5 joint 0 0 0 \
-  /path/to/policy/venv base
+  "$PWD/skill-assets/implementations/openpi/.venv" base
 ```
 
-Use `EVAL_ENV_TYPE=sim` and the simulator environment for real rollouts. The
-policy environment accepts a uv project, a virtualenv directory, or a Python
-executable. `uv` resolves the configured `policy_uv_env_path` (default
-`runtime_env` under the installed adapter). The evaluation environment follows
-XPolicyLab's shared client conventions. Single-environment evaluation is the
-default, as in GPT Direct EEF. Batched skill state is isolated by environment.
+Use `EVAL_ENV_TYPE=sim` and the simulator's conda environment for simulation. The API endpoint must support image input and chat completions; `OPENAI_API_KEY` or `ARK_API_KEY` may also supply credentials.
 
-## Unified skill and memory contracts
-
-Executable skills expose observe, execute, reset, and close methods. Their
-compositions use the repository's `Contract`, `Operation`, `Context`, and
-`sequence`. Memory uses `MemoryStore.snapshot` and `Snapshot.reader`: revisions
-are content-addressed and checked when read. Guidance and execution receipts
-record skill, composition, and memory revisions.
-
-The checked-in `configs/skill_compositions.json` defines memory access followed
-by pi05 execution, sparse visual-history execution, or an isolated primitive
-program. The agent chooses from the compositions enabled in the frozen configuration. The code-policy skill requires the existing validated primitive
-assembly, harness, and binding; a metadata file alone is not executable.
+- Neural skills use joint actions; code programs retain their declared joint or EEF contract. Use the matching evaluation action type.
+- Run one code-program service per host or isolated container because its sidecars use fixed ports.
+- Argument 9 accepts a Python executable, virtualenv, or uv project. `uv` uses `policy_uv_env_path` from `deploy.yml`.
+- `result_dir` sets the default evidence directory, `obs_transform_pipeline` selects the observation transform, and `physicalrsi_startup_timeout_s` controls server startup timeout. `deploy.py` uses the bundled PhysicalRSI evaluation loop.
