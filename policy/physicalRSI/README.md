@@ -1,6 +1,6 @@
 # PhysicalRSI
 
-**Contributor:** HKU MMLAB | **Project:** [PhysicalRSI](https://yanming03.github.io/PhysicalRSI/v2/) | **Original code:** [yanming03/PhysicalRSI](https://github.com/yanming03/PhysicalRSI)
+**Contributor:** HKU MMLAB | **Project:** [PhysicalRSI](https://mmlab.hk/research/PhysicalRSI) | **Original code:** [yanming03/PhysicalRSI](https://github.com/yanming03/PhysicalRSI)
 
 PhysicalRSI combines an API-backed agent, frozen task-aware memory and an execution skill library for RoboDojo ARX X5. At episode start, the agent selects a registered skill composition that remains active until reset. The library contains pi05, pi05-sparse-memory and code-policy programs, with their internal weight identities recorded separately. Runtime source is included under `runtime/`.
 
