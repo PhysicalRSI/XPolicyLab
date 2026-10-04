@@ -1,8 +1,10 @@
 # PhysicalRSI
 
-**Contributor:** HKU MMLAB | **Project:** [PhysicalRSI](https://mmlab.hk/research/PhysicalRSI)
+**Contributor:** HKU MMLab | **Project:** [PhysicalRSI](https://mmlab.hk/research/PhysicalRSI)
 
-An evaluation adapter with an API-backed agent, task-aware memory, and VLA and code-policy skills.
+**PhysicalRSI is a Darwinian Self-Harness framework for embodied intelligence, improving how physical skills are selected, composed, evaluated, and retained.**
+
+This XPolicyLab entry provides a **frozen PhysicalRSI baseline** that combines an API-backed agent, task-aware memory, **code-skill policies**, and **VLA policies**.
 
 Shared evaluation conventions are documented in the [XPolicyLab README](../../README.md).
 
@@ -18,13 +20,16 @@ bash install.sh "$policy_python"
 
 PYTHONPATH=runtime "$policy_python" -m PhysicalRSI_baselines.robodojo.prepare_code_programs \
   "$PWD/skill-assets/implementations/code-skills"
+
 PYTHONPATH=runtime "$policy_python" -m PhysicalRSI_baselines.robodojo.configure_skills \
   --assets "$PWD/skill-assets" --framework "$(cd ../.. && pwd)" \
   --python "$policy_python" --output "$PWD/skills.json" --evidence "$PWD/results" \
   --endpoint https://YOUR_API_HOST/v1/chat/completions --model YOUR_VISION_MODEL
 ```
 
-Use an image-capable chat-completions endpoint and a new configuration output file.
+Use an image-capable Chat Completions endpoint and a new configuration output file.
+
+The downloader verifies the assets listed in `assets.json`. VLA checkpoints are installed under `skill-assets/checkpoints/{pi05,pi05-sparse-memory}/params`; code skills and inference sources live under `skill-assets/implementations/`.
 
 ## Data Processing
 
@@ -32,16 +37,21 @@ Not applicable (evaluation only).
 
 ## Training
 
-Not applicable (evaluation only).
+Not applicable. This release provides a frozen baseline for evaluation.
 
 ## Evaluation
+
+The supported entry is RoboDojo with `env_cfg_type=arx_x5` and `action_type=joint`. The supplied deployment loop also preserves the action representation returned by an individual code skill. Other benchmarks and robot configurations are not qualified by this release.
 
 ```bash
 export ROBODOJO_CONDA_ENV=YOUR_SIMULATOR_ENV
 export PHYSICALRSI_SKILL_CONFIG="$PWD/skills.json"
 export PHYSICALRSI_AGENT_API_KEY=YOUR_API_KEY
 export PHYSICALRSI_EVAL_OUTPUT="$PWD/results"
-PYTHONPATH=runtime "$policy_python" -m PhysicalRSI_baselines.robodojo.skill_preflight "$PHYSICALRSI_SKILL_CONFIG"
+
+PYTHONPATH=runtime "$policy_python" \
+  -m PhysicalRSI_baselines.robodojo.skill_preflight \
+  "$PHYSICALRSI_SKILL_CONFIG"
 
 EVAL_ENV_TYPE=sim bash eval.sh \
   RoboDojo general_pickup skill-library arx_x5 joint 0 0 0 \
