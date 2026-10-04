@@ -301,7 +301,18 @@
             "sha256": "10f83169684d71b097d8e59a23ac5c905a6a04e247cbcd7bec9c83304dfc24b6",
             "line": 108
           }
-        ]
+        ],
+        "object_labels": {
+          "garage": {
+            "visual_name": "rabbit toy figurine",
+            "visual_aliases": [
+              "rabbit figurine",
+              "small toy rabbit",
+              "bunny figure"
+            ],
+            "source": "The detector query and CLIP text prototypes use these visual descriptions for the internal garage label."
+          }
+        }
       },
       "instruction_binding": {
         "destination_assignment": "Chosen by geometric transfer cost; no language-specified category-to-basket binding",
@@ -313,7 +324,7 @@
           "line": 107
         }
       },
-      "capability_id": "cap-662cfa6849d156fedc344552"
+      "capability_id": "cap-70d420364db022dd564009e0"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
