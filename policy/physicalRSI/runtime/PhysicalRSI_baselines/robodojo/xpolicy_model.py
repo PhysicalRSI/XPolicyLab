@@ -2,7 +2,6 @@
 
 The installed runtime supplies actor_factory(identity=...). It must construct a
 fresh, unstarted isolated actor with the pinned policy, memory and primitive closure.
-This boundary does not select skill_choices, evolve policies or judge task success.
 """
 
 import math

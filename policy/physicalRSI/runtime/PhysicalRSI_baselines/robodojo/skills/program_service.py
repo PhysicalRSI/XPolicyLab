@@ -77,7 +77,7 @@ class Model:
             self.client = WsModelClient(url=f'ws://127.0.0.1:{port}',
                 evaluation_id=self.output.name, trial_id=self.output.name,
                 max_connect_seconds=configuration.get('startup_timeout_s', 600),
-                request_timeout_s=configuration.get('request_timeout_s', 120))
+                request_timeout_s=configuration.get('request_timeout_s', 600))
             self.reset()
         except BaseException:
             self.close()
@@ -89,7 +89,13 @@ class Model:
         return self.client.call(func_name=method, **({'obs': obs} if obs is not None else {}))
 
     def update_obs_batch(self, observations):
-        return self._call('update_obs_batch', observations)
+        # Frozen programs control fixed-base manipulators. Newer clients also
+        # include optional mobile-base metadata, outside that input contract.
+        prepared = [dict(obs, state={key: value for key, value in obs['state'].items()
+                                    if key != 'mobile'})
+                    if isinstance(obs.get('state'), dict) and 'mobile' in obs['state']
+                    else obs for obs in observations]
+        return self._call('update_obs_batch', prepared)
 
     def get_action_batch(self, indices):
         chunks = self._call('get_action_batch', indices)

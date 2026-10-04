@@ -1,4 +1,4 @@
-"""Frozen F/H closure, extracted from the reviewed v1 Self-Harness."""
+"""Self-Harness function and harness artifacts."""
 
 from pathlib import Path
 

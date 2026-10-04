@@ -1,8 +1,26 @@
 {
   "schema": "physicalrsi.skill-compositions/v1",
   "compositions": {
-    "memory-guided-manipulation": {"description": "Read the frozen task-specific policy memory, then execute the pi05 manipulation skill.", "steps": ["memory.snapshot", "pi05"]},
-    "memory-guided-visual-history": {"description": "Read frozen memory, then execute manipulation with causal visual history.", "steps": ["memory.snapshot", "pi05-sparse-memory"]},
-    "memory-guided-primitive-program": {"description": "Read frozen memory, then execute the registered isolated primitive program.", "steps": ["memory.snapshot", "code-policy"]}
+    "memory-guided-manipulation": {
+      "description": "Visual action inference from current RGB observations, robot state, instruction, and episodic memory.",
+      "steps": [
+        "memory.snapshot",
+        "pi05"
+      ]
+    },
+    "memory-guided-visual-history": {
+      "description": "Visual action inference from current RGB observations, robot state, instruction, and sparse visual history memory.",
+      "steps": [
+        "memory.snapshot",
+        "pi05-sparse-memory"
+      ]
+    },
+    "memory-guided-primitive-program": {
+      "description": "Observation-grounded closed-loop manipulation through declared skill contracts and physical-state memory.",
+      "steps": [
+        "memory.snapshot",
+        "code-policy"
+      ]
+    }
   }
 }

@@ -18,7 +18,10 @@ def inspect(path):
         errors.append('Custom compositions cannot replace built-in definitions')
     catalog.update(extensions)
     for name in config.get('compositions', []):
-        if name not in catalog or catalog[name]['steps'][-1] not in config.get('skills', {}):
+        end = catalog[name]['steps'][-1] if name in catalog else None
+        if (name not in catalog
+                or (end not in config.get('skills', {})
+                    and not (end == 'memory-program-library' and config.get('program_registry')))):
             errors.append('Missing executable composition: ' + name)
     if not config.get('compositions'):
         errors.append('No skill compositions configured')
@@ -62,6 +65,17 @@ def inspect(path):
                 errors.append(f'code-policy specification: {type(exc).__name__}: {exc}')
         else:
             errors.append('Unknown skill: ' + name)
+    registry = config.get('program_registry')
+    if registry is not None:
+        if not isinstance(registry, dict) or not registry:
+            errors.append('Operation memory registry must be nonempty')
+        else:
+            for operation, record in registry.items():
+                if (not isinstance(record, dict)
+                        or record.get('input') != 'robodojo.observation-batch/v1'
+                        or record.get('output') != 'robodojo.action-chunks/v1'
+                        or not isinstance(record.get('configuration'), dict)):
+                    errors.append('Invalid operation memory: ' + str(operation))
     if not any(os.environ.get(key) for key in ('PHYSICALRSI_AGENT_API_KEY', 'OPENAI_API_KEY', 'ARK_API_KEY')):
         errors.append('Missing agent API key')
     agent = config.get('agent', {})

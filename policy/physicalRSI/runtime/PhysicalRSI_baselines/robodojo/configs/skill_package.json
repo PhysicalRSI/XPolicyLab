@@ -24,12 +24,14 @@
     {
       "name": "code-policy",
       "implementation": "PhysicalRSI_baselines.robodojo.skills.code_policy",
-      "assets": []
+      "assets": [
+        "physicalrsi-code-skills"
+      ]
     }
   ],
-  "weight_layout": "Separate explicitly identified checkpoints; no merged checkpoint is claimed.",
+  "weight_layout": "Checkpoint assets remain separate inputs to their skills.",
   "evaluation_profile": {
-    "compositions": "Frozen configured subset of registered skill compositions",
+    "compositions": "Configured subset of the skill library",
     "selection": "Agent uses instruction, observations and task-aware memory",
     "calls_per_episode": 1,
     "policy_inputs": "Original observations and instructions preserved"

@@ -2,12 +2,15 @@
 import os
 import uuid
 from copy import deepcopy
+from numbers import Integral
 from pathlib import Path
 
 from PhysicalRSI_core.contracts import Context
 from PhysicalRSI_core.infra.storage import atomic_json, read_json, digest
 from PhysicalRSI.Embodied_Harness.memory.store import MemoryStore
+from PhysicalRSI.Embodied_Harness.skills.episode_plan import catalogue as operation_catalogue, freeze_episode_plan, SCHEMA as OPERATION_PLAN_SCHEMA
 from .agent_planner import AgentPlanner
+from .capability_memory import attach_capability_memory
 from .execution_skills import load_skill, compose_skill, compose_observer
 
 
@@ -33,11 +36,51 @@ class Model:
                     or not isinstance(entry.get('steps'), list)
                     or len(entry['steps']) != 2
                     or entry['steps'][0] != 'memory.snapshot'
-                    or entry['steps'][-1] not in self.config['skills']):
+                    or (entry['steps'][-1] not in self.config['skills']
+                        and not (entry['steps'][-1] == 'memory-program-library'
+                                 and self.config.get('program_registry')))):
                 raise ValueError('Composition has no configured executable skill: ' + name)
+            entry = deepcopy(entry)
+            skill_entry = self.config['skills'].get(entry['steps'][-1])
+            memories = skill_entry['configuration'].get('operation_memories') if skill_entry else None
+            if memories is not None:
+                if not isinstance(memories, dict) or not memories:
+                    raise ValueError('Structured skill requires registered operation memories')
+                for revision, memory in memories.items():
+                    if digest(memory) != revision:
+                        raise ValueError('Configured operation memory revision mismatch')
+                entry['operation_memory'] = [operation_catalogue(memory) for memory in memories.values()]
+            entry = attach_capability_memory(entry, entry['steps'][-1])
             self.catalog[name] = entry
         if not self.catalog:
             raise ValueError('At least one configured skill composition required')
+        registry = self.config.get('program_registry', {})
+        self.operation_program = None
+        if registry:
+            operations = {}
+            for operation, entry in registry.items():
+                if not isinstance(entry, dict) or not isinstance(entry.get('configuration'), dict):
+                    raise ValueError('Invalid operation memory registry entry: ' + str(operation))
+                operations[operation] = {
+                    'input': entry.get('input', 'robodojo.observation-batch/v1'),
+                    'output': entry.get('output', 'robodojo.action-chunks/v1'),
+                    'description': entry.get('description', ''),
+                    'memory_primitives': entry.get('memory_primitives', []),
+                }
+                operations[operation] = attach_capability_memory(
+                    operations[operation], entry.get('source_name', operation))
+                memories = entry['configuration'].get('operation_memories', {})
+                for revision, memory in memories.items():
+                    if digest(memory) != revision:
+                        raise ValueError('Configured operation memory revision mismatch')
+                if memories:
+                    operations[operation]['operation_memory'] = [
+                        operation_catalogue(memory) for memory in memories.values()]
+            self.operation_program = {
+                'input': 'robodojo.observation-batch/v1',
+                'output': 'robodojo.action-chunks/v1',
+                'operations': operations,
+            }
         self.planner = AgentPlanner(**self.config.get('agent', {}))
         self.root = Path(os.environ.get('PHYSICALRSI_EVAL_OUTPUT', './results/physicalrsi')) / uuid.uuid4().hex
         self.root.mkdir(parents=True, exist_ok=False)
@@ -50,6 +93,8 @@ class Model:
                              memory_revision=self.memory.revision, qualification=False, baseline_mode='task-aware-skill-library',
                              agent_role='memory_conditioned_skill_composition')
         atomic_json(self.root / 'identity.json', self.identity)
+        self.action_queues = {}
+        self.groups = {}
         self.sessions = {}
         self.pending = {}
         self.failed = False
@@ -64,34 +109,94 @@ class Model:
         if not isinstance(instruction, str) or not instruction.strip():
             raise ValueError('Natural-language instruction required')
         plan = self.planner.plan(instruction=instruction, observation=observation,
-                                 memory=self.memory.read(), previous_plan=None, compositions=self.catalog)
-        if (set(plan) != {'composition', 'rationale'}
+                                 memory=self.memory.read(), previous_plan=None,
+                                 compositions=self.catalog, operation_program=self.operation_program)
+        expected = {'composition', 'operations', 'rationale'} if self.operation_program else {'composition', 'rationale'}
+        if (set(plan) != expected
                 or plan.get('composition') not in self.catalog
                 or not isinstance(plan.get('rationale'), str) or not plan['rationale'].strip()):
             raise ValueError('Agent must choose a registered skill composition with rationale')
         name = plan['composition']
         episode = uuid.uuid4().hex
-        selected = self.catalog[name]['steps'][-1]
-        descriptor = self.config['skills'][selected]
+        atomic_json(self.root / 'episodes' / episode / 'agent-decision.json',
+                    dict(env_idx=index, instruction=instruction, plan=plan,
+                         status='selected_before_implementation_load', **self.identity))
+        selected_operation = None
+        if name == 'memory-guided-program-library':
+            operations = plan.get('operations')
+            if not isinstance(operations, list) or len(operations) != 1:
+                raise ValueError('The operation library requires one complete capability at episode start')
+            selected_operation = operations[0]
+            if selected_operation not in self.config.get('program_registry', {}):
+                raise ValueError('Agent selected an unregistered operation memory')
+            registered = self.config['program_registry'][selected_operation]
+            selected = registered.get('source_name', selected_operation)
+            descriptor = {
+                'name': selected,
+                'implementation': 'code-policy',
+                'configuration': deepcopy(registered['configuration']),
+            }
+        else:
+            if plan.get('operations'):
+                raise ValueError('Operations cannot be attached to an independent execution skill')
+            selected = self.catalog[name]['steps'][-1]
+            descriptor = deepcopy(self.config['skills'][selected])
         if descriptor.get('name') != selected:
             raise ValueError('Skill descriptor identity mismatch')
-        skill = load_skill(descriptor, self.deployment)
-        try:
-            operation = compose_skill(name, skill, self.memory)
-            episode_memory = self.store.snapshot({
-                'parent_revision': self.memory.revision, 'episode': episode,
-                'instruction': instruction, 'plan': plan, 'skill': skill.describe(),
-                'composition_revision': operation.revision,
-                'evidence_status': 'skill_composition_applied; outcome_not_yet_observed',
-            })
-            observer = compose_observer(name, skill, self.memory)
-            atomic_json(self.root / 'episodes' / episode / 'episode.json',
-                        dict(env_idx=index, plan=plan, skill=skill.describe(),
-                             composition_revision=operation.revision, episode_memory_revision=episode_memory.revision, **self.identity))
-        except BaseException:
-            skill.close()
-            raise
-        return dict(skill=skill, operation=operation, observer=observer, context=Context(episode), steps=0)
+        operation_plan_revision = None
+        memories = descriptor['configuration'].get('operation_memories')
+        if memories is not None:
+            operation_plan = dict(schema=OPERATION_PLAN_SCHEMA, episode=episode,
+                                  rationale=plan['rationale'], programs={
+                revision: {method: program['steps'] for method, program in memory['programs'].items()}
+                for revision, memory in memories.items()})
+            environment = freeze_episode_plan(self.root / 'episodes' / episode / 'operation-plan.json',
+                                              operation_plan, memories)
+            descriptor['configuration'].setdefault('environment', {}).update(environment)
+            operation_plan_revision = digest(operation_plan)
+        group_key = selected if name == 'memory-guided-program-library' else name
+        group = self.groups.get(group_key)
+        if group is None:
+            group_id = uuid.uuid4().hex
+            worker_plan_revision = None
+            if memories is not None:
+                worker_plan = dict(schema=OPERATION_PLAN_SCHEMA, episode=group_id,
+                                   rationale='Execute the registered composition independently selected by each member episode.',
+                                   programs=operation_plan['programs'])
+                environment = freeze_episode_plan(self.root / 'groups' / group_id / 'operation-plan.json',
+                                                  worker_plan, memories)
+                descriptor['configuration'].setdefault('environment', {}).update(environment)
+                worker_plan_revision = digest(worker_plan)
+            skill = load_skill(descriptor, self.deployment)
+            try:
+                group = dict(skill=skill, operation=compose_skill(group_key, skill, self.memory),
+                             observer=compose_observer(group_key, skill, self.memory),
+                             context=Context(group_id), operation_plan_revision=worker_plan_revision,
+                             indices=[])
+                self.groups[group_key] = group
+            except BaseException:
+                skill.close()
+                raise
+        skill = group['skill']
+        operation = group['operation']
+        episode_memory = self.store.snapshot({
+            'parent_revision': self.memory.revision, 'episode': episode,
+            'instruction': instruction, 'plan': plan, 'skill': skill.describe(),
+            'composition_revision': operation.revision,
+            'episode_operation_plan_revision': operation_plan_revision,
+            'operation_plan_revision': group['operation_plan_revision'],
+            'execution_group': group['context'].episode,
+            'evidence_status': 'skill_composition_applied; outcome_not_yet_observed',
+        })
+        atomic_json(self.root / 'episodes' / episode / 'episode.json',
+                    dict(env_idx=index, plan=plan, skill=skill.describe(),
+                         composition_revision=operation.revision,
+                         episode_operation_plan_revision=operation_plan_revision,
+                         operation_plan_revision=group['operation_plan_revision'],
+                         execution_group=group['context'].episode,
+                         episode_memory_revision=episode_memory.revision, **self.identity))
+        return dict(skill=skill, operation=operation, observer=group['observer'],
+                    context=Context(episode), group=group_key, steps=0, delivered_chunks=0)
 
     def update_obs(self, obs):
         return self.update_obs_batch([obs if "env_idx" in obs else dict(obs, env_idx=0)])
@@ -100,17 +205,22 @@ class Model:
         if self.closed or self.failed:
             raise RuntimeError('Skill runtime closed or failed; reset required')
         rows = list(observations)
-        indices = [row.get('env_idx', 0) for row in rows]
-        if not rows or len(set(indices)) != len(indices):
-            raise ValueError('Distinct environment observations required')
+        indices = [row.get('env_idx') for row in rows]
+        if (not 1 <= len(rows) <= 10 or any(isinstance(i, bool) or not isinstance(i, Integral) or i < 0 for i in indices)
+                or len(set(indices)) != len(indices)):
+            raise ValueError('One to ten distinct explicit environment observations required')
         self.pending.clear()
         try:
+            grouped = {}
             for index, observation in zip(indices, rows):
                 if index not in self.sessions:
                     self.sessions[index] = self._start_episode(index, observation)
-                session = self.sessions[index]
-                session['observer']([observation], session['context'])
-                self.pending[index] = observation
+                grouped.setdefault(self.sessions[index]['group'], []).append(observation)
+            for name, batch in grouped.items():
+                group = self.groups[name]
+                group['observer'](batch, group['context'])
+                group['indices'] = [row['env_idx'] for row in batch]
+            self.pending.update(zip(indices, rows))
             self.indices = indices
         except BaseException:
             self.pending.clear()
@@ -128,32 +238,62 @@ class Model:
         if self.closed or self.failed:
             raise RuntimeError('Skill runtime closed or failed; reset required')
         indices = list(self.indices if env_idx_list is None else env_idx_list)
-        if not indices or len(set(indices)) != len(indices) or not set(indices) <= self.pending.keys():
-            raise ValueError('Fresh observations and agent guidance required')
-        results = []
+        if (not indices or len(set(indices)) != len(indices)
+                or not set(indices) <= set(self.indices) or not set(indices) <= set(self.pending)):
+            raise ValueError('Fresh observations for every active environment required')
         try:
+            self.memory.read()
+            # Omitted environments have terminated according to the native caller.
+            # Their remaining actions must never be delivered to another episode.
+            for index in set(self.action_queues) - set(indices):
+                del self.action_queues[index]
+            names = list(dict.fromkeys(self.sessions[index]['group'] for index in indices))
+            for name in names:
+                group = self.groups[name]
+                active = [index for index in group['indices']
+                          if index in set(indices) and not self.action_queues.get(index)]
+                if not active:
+                    continue
+                chunks = group['operation'](dict(observations=[self.pending[i] for i in active],
+                                                  indices=active), group['context'])
+                if (not isinstance(chunks, list) or len(chunks) != len(active)
+                        or any(not isinstance(c, (list, tuple)) or not c
+                               or any(not isinstance(a, dict) for a in c) for c in chunks)):
+                    raise ValueError('Skill must return one nonempty action chunk per active environment')
+                for index, chunk in zip(active, chunks):
+                    # Own a stable copy: later backend calls cannot mutate a tail
+                    # that has already been generated but not yet delivered.
+                    self.action_queues[index] = deepcopy(list(chunk))
+                    self.sessions[index]['steps'] += 1
+            horizon = min(len(self.action_queues[index]) for index in indices)
+            results = []
             for index in indices:
+                queue = self.action_queues[index]
+                results.append(queue[:horizon])
+                self.action_queues[index] = queue[horizon:]
                 session = self.sessions[index]
-                observation = self.pending.pop(index)
-                chunks = session['operation'](dict(observations=[observation], indices=[index]), session['context'])
-                if not isinstance(chunks, list) or len(chunks) != 1 or not chunks[0]:
-                    raise ValueError('Skill must return one nonempty action chunk')
-                session['steps'] += 1
+                session['delivered_chunks'] += 1
                 atomic_json(self.root / 'episodes' / session['context'].episode / 'execution.json',
-                            dict(action_chunks=session['steps'], composition_revision=session['operation'].revision,
-                                 memory_revision=self.memory.revision))
-                results.append(chunks[0])
+                            dict(action_chunks=session['steps'], delivered_chunks=session['delivered_chunks'],
+                                 buffered_actions=len(self.action_queues[index]),
+                                 composition_revision=session['operation'].revision,
+                                 memory_revision=self.memory.revision,
+                                 execution_group=self.groups[session['group']]['context'].episode))
+            self.pending.clear()
             return results
         except BaseException:
             self.failed = True
             self.pending.clear()
+            self.action_queues.clear()
             raise
 
     def reset(self):
         self.pending.clear()
-        for index, session in list(self.sessions.items()):
-            session['skill'].close()
-            del self.sessions[index]
+        self.action_queues.clear()
+        for group in self.groups.values():
+            group['skill'].close()
+        self.groups.clear()
+        self.sessions.clear()
         self.indices = []
         self.failed = False
 

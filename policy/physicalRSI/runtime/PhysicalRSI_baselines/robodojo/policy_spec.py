@@ -1,9 +1,4 @@
-"""Public builder for a versioned code-policy skill assembly.
-
-The compatibility builder keeps accepting the historical specification shape,
-but newly created specifications use the neutral ``code-policy`` schema.  This
-module is the preferred entry point for new task integrations.
-"""
+"""Public builder for a versioned code-policy skill assembly."""
 
 from copy import deepcopy
 

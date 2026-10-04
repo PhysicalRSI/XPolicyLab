@@ -9,8 +9,10 @@ env_cfg_type: null
 seed: null
 action_type: joint
 gpu_id: null
-eval_batch: false
+eval_batch: true
 policy_uv_env_path: runtime_env
 result_dir: ./results/physicalrsi/
 obs_transform_pipeline: xspark-v1.0
 physicalrsi_startup_timeout_s: 1800
+
+request_timeout_s: 1800

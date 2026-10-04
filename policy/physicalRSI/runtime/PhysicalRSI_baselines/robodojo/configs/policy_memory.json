@@ -1,37 +1,27 @@
 {
   "schema": "physicalrsi.task-specific-policy-memory/v1",
-  "purpose": "Guide executable skill composition from instructions, observations and immutable task-aware memory.",
-  "evidence_policy": {
-    "default_status": "design_guidance",
-    "meaning": "Entries describe runtime contracts and engineering guidance, not measured task success rates.",
-    "promotion": "A lesson becomes empirical only with a recorded rollout, exact skill and memory revisions, environment configuration, and outcome evidence.",
-    "evaluation_boundary": "Read the frozen library during evaluation. Record new episode memories separately; publish changes through Self-Harness after evaluation."
-  },
+  "purpose": "Guide executable skill composition from instructions, observations, and immutable memory.",
   "instruction_interpretation": [
     {
       "id": "intent.objects",
-      "guidance": "Identify the manipulated object, destination, requested relation, and completion condition from the natural-language instruction and current observation.",
-      "status": "design_guidance"
+      "guidance": "Identify the manipulated object, destination, requested relation, and completion condition from the natural-language instruction and current observation."
     },
     {
       "id": "intent.constraints",
-      "guidance": "Retain order, orientation, arm, contact, and object-preservation constraints. Do not reinterpret a vague instruction as permission for an unrelated behavior.",
-      "status": "design_guidance"
+      "guidance": "Retain order, orientation, arm, contact, and object-preservation constraints. Do not reinterpret a vague instruction as permission for an unrelated behavior."
     },
     {
       "id": "intent.uncertainty",
-      "guidance": "Separate directly observed facts from inferred object state. Missing visibility is not evidence of task completion.",
-      "status": "design_guidance"
+      "guidance": "Separate directly observed facts from inferred object state. Missing visibility is not evidence of task completion."
     },
     {
       "id": "intent.identity",
-      "guidance": "Use instruction semantics and observations. Benchmark IDs, layout indices, and seed identifiers do not describe a manipulation capability.",
-      "status": "design_guidance"
+      "guidance": "Use instruction semantics and observations. Benchmark IDs, layout indices, and seed identifiers do not describe a manipulation capability."
     }
   ],
   "capabilities": {
     "pi05": {
-      "description": "Observation-conditioned manipulation with a frozen pi05 checkpoint.",
+      "description": "RGB, robot-state, and instruction-conditioned joint-action inference.",
       "prerequisites": [
         "Matching checkpoint architecture and inference transforms",
         "Matching normalization assets",
@@ -43,11 +33,10 @@
         "Does not establish success independently of the environment",
         "No general claim that one checkpoint handles every instruction",
         "Missing checkpoint data cannot be replaced by metadata"
-      ],
-      "evidence_status": "implementation_contract; task competence requires rollout evidence"
+      ]
     },
     "pi05-sparse-memory": {
-      "description": "Manipulation with causal per-environment visual history retained by the sparse-memory implementation.",
+      "description": "Joint-action inference with current robot state and causal visual history.",
       "prerequisites": [
         "A sparse-memory checkpoint and compatible OpenPI architecture",
         "Chronologically ordered observations",
@@ -64,19 +53,18 @@
         "Cannot infer an unobserved past from an empty initial history",
         "Do not duplicate observations merely to fill a memory window",
         "Do not share another environment's history"
-      ],
-      "evidence_status": "implementation_contract; comparative advantage is not established"
+      ]
     },
     "code-policy": {
-      "description": "An isolated, registered primitive program executed against a pinned primitive assembly.",
+      "description": "Observation-grounded execution through declared perception, kinematics, and control contracts.",
       "prerequisites": [
         "Validated program source and source revision",
-        "A frozen harness and exact executable binding",
+        "A compatible harness and executable binding",
         "Available perception, kinematics, and primitive services",
         "Declared memory parameters such as target and arm"
       ],
       "observation_cues": [
-        "The registered program explicitly covers the requested operation",
+        "The capability memory covers the requested operation",
         "Required objects and geometric inputs are present",
         "Declared preconditions can be evaluated with the available observation interface"
       ],
@@ -85,47 +73,61 @@
         "A skill description is not an executable program",
         "Do not invent a program or tool at evaluation time",
         "A generic grasp example is not evidence for insertion, folding, or long-horizon tasks"
-      ],
-      "evidence_status": "contract_and_assembly_validation_required"
+      ]
     }
+  },
+  "operation_memory": {
+    "schema": "physicalrsi.operation-memory/v1",
+    "meaning": "A capability record combines an observation contract, reusable geometric or temporal constraints, and an executable implementation.",
+    "conditioning": [
+      "Bind object roles, frames, contact constraints, and available observations at episode start.",
+      "Use current RGB and robot state to instantiate geometry; do not import a layout, seed, or prior outcome.",
+      "Resolve one complete capability plan before execution and keep its implementation stable until reset."
+    ],
+    "selection_inputs": [
+      "instruction semantics",
+      "current RGB and robot state",
+      "declared input and output contracts",
+      "capability memory"
+    ],
+    "excluded_inputs": [
+      "benchmark identifiers",
+      "layout or seed identifiers",
+      "measured score or success priors"
+    ]
   },
   "composition_rules": [
     {
       "id": "compose.registry",
-      "guidance": "Choose only from available_compositions. The returned composition must resolve to configured executable skills.",
-      "status": "runtime_contract"
+      "guidance": "Choose only from available_compositions. The returned composition must resolve to configured executable skills."
     },
     {
       "id": "compose.types",
-      "guidance": "Output and input Contracts must match across consecutive Operations. Units, frames, and embodiment conversions require explicit steps.",
-      "status": "runtime_contract"
+      "guidance": "Output and input Contracts must match across consecutive Operations. Units, frames, and embodiment conversions require explicit steps."
     },
     {
       "id": "compose.memory",
-      "guidance": "Read immutable memory and verify its digest. Record the library and episode revisions used to condition execution.",
-      "status": "runtime_contract"
+      "guidance": "Read immutable memory and use its recorded revision to condition execution."
     },
     {
       "id": "compose.effects",
-      "guidance": "Do not run concurrent Operations with overlapping physical or state effects. One action-producing execution skill controls the episode in the current registered compositions.",
-      "status": "runtime_contract"
+      "guidance": "Do not run concurrent Operations with overlapping physical or state effects. One action-producing execution skill controls the episode in the current compositions."
     },
     {
       "id": "compose.boundary",
-      "guidance": "Choose once at episode start using instructions, observations and memory. Keep the composition stable until reset.",
-      "status": "runtime_contract"
-    },
-    {
-      "id": "compose.eligibility",
-      "guidance": "A common skill interface does not establish official benchmark eligibility. Evaluate the complete selection and execution behavior under the applicable protocol.",
-      "status": "review_required"
+      "guidance": "Choose at episode start from the instruction, observations, and memory; keep the composition stable until reset."
     }
   ],
   "failure_handling": [
     {
       "id": "failure.agent",
-      "trigger": "Missing credentials, timeout, invalid JSON, or an unavailable composition",
+      "trigger": "Missing credentials, failed API requests, invalid JSON, or an unrecoverable plan validation error",
       "response": "Stop before skill execution; retain the failure separately from task success or failure."
+    },
+    {
+      "id": "failure.plan",
+      "trigger": "An unknown composition name or an empty operation-library selection",
+      "response": "Normalize recognized composition names. For an unknown composition with valid operation handles, select the configured operation library. Otherwise use the configured general visual skill when available. Reject plans that remain invalid."
     },
     {
       "id": "failure.assets",
@@ -153,56 +155,17 @@
       "response": "Do not blindly replay the request; retain the interrupted session evidence."
     }
   ],
-  "episode_evidence": {
-    "selection": [
-      "Natural-language instruction",
-      "Available composition names and revisions",
-      "Agent choice and rationale",
-      "Frozen memory revision",
-      "Skill implementation revision"
-    ],
-    "execution": [
-      "Environment identity",
-      "Action-chunk count",
-      "Composition revision",
-      "Observation and action evidence from the evaluation loop"
-    ],
-    "outcome": [
-      "Environment-defined termination",
-      "Environment-provided score and success if available",
-      "Infrastructure failures reported separately",
-      "Video or trajectory artifact references if produced"
-    ],
-    "nonclaims": [
-      "Returning actions is not task success",
-      "Synthetic observations are not simulation results",
-      "API call budget is not a measured call-frequency ratio"
-    ]
-  },
-  "development_lessons": {
-    "source": "Local integration checks and implementation contracts",
-    "entries": [
-      {
-        "id": "integration.config",
-        "lesson": "An importable OpenPI environment may still lack a checkpoint's named inference configuration. Validate the configuration before allocating model resources.",
-        "evidence_status": "observed_configuration_failure"
-      },
-      {
-        "id": "integration.assets",
-        "lesson": "Robot metadata paths can fail in a relocated checkout when symlink traversal changes relative path resolution. Validate the installed checkout's effective paths.",
-        "evidence_status": "observed_installation_failure"
-      },
-      {
-        "id": "integration.history",
-        "lesson": "Selecting a subset of environments must not replay observations into sparse visual history. Reindex the existing batch state instead.",
-        "evidence_status": "implementation_contract"
-      },
-      {
-        "id": "integration.scope",
-        "lesson": "Keep install, agent selection, checkpoint inference, debug transport, and real simulator validation as separate evidence categories.",
-        "evidence_status": "validation_design"
-      }
-    ]
-  },
-  "evidence_requirements": {}
+  "reusable_primitives": {
+    "visual_grounding": "Bind instruction roles to currently visible objects, openings, symbols, or board elements.",
+    "geometry": "Estimate a reachable relation in the current camera and robot frames.",
+    "grasp": "Construct and qualify a reachable grasp from current observations.",
+    "transfer": "Move an observed object while preserving the declared contact and frame constraints.",
+    "alignment": "Refresh relative pose before a constrained contact motion.",
+    "insertion": "Perform bounded insertion or placement using current geometry and contact checks.",
+    "temporal_tracking": "Preserve identity and causal observation order across action chunks.",
+    "tilt": "Control orientation and dwell for a supported transfer.",
+    "release": "Release only after the declared destination relation is observed.",
+    "return_home": "Restore the declared safe home relation after execution.",
+    "recovery": "Use the implementation-defined bounded recovery when an observation contract is uncertain."
+  }
 }

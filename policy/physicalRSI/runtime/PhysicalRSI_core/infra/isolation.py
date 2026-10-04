@@ -1,6 +1,6 @@
 """Linux chroot/seccomp execution of Python with a read-only stdlib runtime.
 
-Requires a privileged trusted controller. No fallback to unrestricted exec.
+Requires a controller with permission to create a Linux chroot.
 Only explicitly supplied source and input enter the jail. A single precreated
 result file is writable; native robot RPC and third-party packages are not yet
 part of this backend.

@@ -1,4 +1,4 @@
-"""Reviewed primitive-only code-policy example shipped with the adapter."""
+"""Code-policy example using the primitive API."""
 
 # Keep the source in the public baseline module so its digest and validation
 # are shared by the local demo and the installed XPolicyLab adapter.

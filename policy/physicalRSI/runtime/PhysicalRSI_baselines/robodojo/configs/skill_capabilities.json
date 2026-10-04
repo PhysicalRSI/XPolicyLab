@@ -1,0 +1,2261 @@
+{
+  "schema": "physicalrsi.capability-library/v1",
+  "entries": [
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "align-blocks",
+      "description": "RGB straightedge localization and tool-mediated contact alignment of multiple blocks.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "align_blocks_rgb_straightedge.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/align_blocks_rgb_straightedge/8f4dd9a66b463155/align_blocks_rgb_straightedge/model.py",
+          "sha256": "70a3d5ce6af076eaad5bf22ffc81acf6057485fe8340cb33faaa320da9651feb"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/68d3fab9f483c3b18ad84297d66d468b1e0de0ba0e3e7aafdba9b12346f79231.json",
+            "sha256": "68d3fab9f483c3b18ad84297d66d468b1e0de0ba0e3e7aafdba9b12346f79231"
+          },
+          "operation_ids": [
+            "Model.action.motion.emit",
+            "Model.event.evidence.record",
+            "Model.get_action.execution.advance",
+            "Model.get_action_batch.execution.advance",
+            "Model.one.evidence.record_action",
+            "Model.one.execution.advance",
+            "Model.one.execution.restore_or_start",
+            "Model.reset.episode.reset",
+            "Model.scene.evidence.record_scene",
+            "Model.scene.vision.estimate",
+            "Model.scene.vision.prepare",
+            "Model.update_obs.observation.ingest",
+            "Model.update_obs_batch.observation.ingest"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/align_blocks_rgb_straightedge/8f4dd9a66b463155/align_blocks_rgb_straightedge/model.py",
+            "sha256": "70a3d5ce6af076eaad5bf22ffc81acf6057485fe8340cb33faaa320da9651feb"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-9395de20694e671348e5d589",
+      "observation_cues": [
+        "A visible straightedge is the contact tool; block positions are estimated from RGB.",
+        "The tool edge supplies a common alignment reference for multiple objects."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "A visible straightedge is the contact tool; block positions are estimated from RGB.",
+          "The tool edge supplies a common alignment reference for multiple objects."
+        ],
+        "unsupported": [
+          "Directly pushing one shaped object toward a target silhouette uses a different contact model."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "arrange-largest-number-random",
+      "description": "Visual symbol grounding, ordering, and reachable object placement under observed geometry.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "arrange_rgb.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/arrange_rgb/7990151605e857df/arrange_rgb/model.py",
+          "sha256": "51eab02d4a2c7f8796cc37a5818004cbc05c832e84f121e00ff43bb5645bf01e"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/bb1d374ed2e0aa707dada772aca1d00026c4a7cf1e91df102ff241c48b67dc60.json",
+            "sha256": "bb1d374ed2e0aa707dada772aca1d00026c4a7cf1e91df102ff241c48b67dc60"
+          },
+          "operation_ids": [
+            "Model.get_action.execution.advance",
+            "Model.get_action_batch.execution.advance",
+            "Model.on_trial_end.episode.reset",
+            "Model.prepare_case.episode.reset",
+            "Model.reset.episode.reset",
+            "Model.update_obs.observation.ingest",
+            "Model.update_obs_batch.observation.ingest"
+          ]
+        },
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/94d395fe15b864d5d8c43d9b3bd6b6777d7571a0d6f5c1eed02507870cf7ba71.json",
+            "sha256": "94d395fe15b864d5d8c43d9b3bd6b6777d7571a0d6f5c1eed02507870cf7ba71"
+          },
+          "operation_ids": [
+            "Model._add.motion.interpolate",
+            "Model._add.motion.prepare_endpoints",
+            "Model.finish_move.execution.finish_relay",
+            "Model.finish_move.planning.retry_or_advance",
+            "Model.finish_move.vision.confirm_placement",
+            "Model.get_action.execution.advance_and_emit",
+            "Model.get_action.execution.check_transition",
+            "Model.get_action.planning.initialize_if_needed",
+            "Model.log.evidence.record",
+            "Model.on_trial_end.episode.reset",
+            "Model.plan.memory.initialize_layout",
+            "Model.plan.planning.validate_and_choose",
+            "Model.plan.state.capture_home",
+            "Model.plan.vision.read_layout",
+            "Model.prepare_case.episode.reset",
+            "Model.public_action.execution.advance",
+            "Model.reset.episode.reset",
+            "Model.segment.motion.compile_phases",
+            "Model.segment.motion.compute_grasp_geometry",
+            "Model.segment.motion.initialize_segment",
+            "Model.select_qualified.planning.qualify",
+            "Model.skip_rank.memory.update_progress",
+            "Model.snapshot.evidence.record",
+            "Model.stop.memory.update_progress",
+            "Model.update_obs.observation.ingest"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/arrange_rgb/7990151605e857df/arrange_rgb/model.py",
+            "sha256": "51eab02d4a2c7f8796cc37a5818004cbc05c832e84f121e00ff43bb5645bf01e"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-e2eb7997bebcaaa82f86e340"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "classify-objects",
+      "description": "Visual attribute grounding with category-aware localization and bounded grasp-and-place control.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_v1_classify_objects.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/model.py",
+          "sha256": "10f83169684d71b097d8e59a23ac5c905a6a04e247cbcd7bec9c83304dfc24b6"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/9dd34e02eb6883bfb9d605b42bed96090bbeed843f3a643ff9b0b7621e8610fe.json",
+            "sha256": "9dd34e02eb6883bfb9d605b42bed96090bbeed843f3a643ff9b0b7621e8610fe"
+          },
+          "operation_ids": [
+            "classify_objects.action.count_and_emit",
+            "classify_objects.evidence.observation",
+            "classify_objects.motion.advance_generator",
+            "classify_objects.motion.prepare_generator",
+            "classify_objects.observation.capture",
+            "classify_objects.observation.record_and_initialize"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/model.py",
+            "sha256": "10f83169684d71b097d8e59a23ac5c905a6a04e247cbcd7bec9c83304dfc24b6"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "declared_source_constraints",
+        "object_vocabulary": [
+          "camera",
+          "toy_car",
+          "watch",
+          "pen",
+          "garage"
+        ],
+        "container_count": 3,
+        "evidence": [
+          {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/perception.py",
+            "sha256": "1e6b77c65f24340423f7d0662bd467bad3dc25655980fb4312afda711d9420e6",
+            "line": 32
+          },
+          {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/model.py",
+            "sha256": "10f83169684d71b097d8e59a23ac5c905a6a04e247cbcd7bec9c83304dfc24b6",
+            "line": 108
+          }
+        ]
+      },
+      "instruction_binding": {
+        "destination_assignment": "Chosen by geometric transfer cost; no language-specified category-to-basket binding",
+        "supported_semantics": "Group detected categories into separate baskets",
+        "evidence": {
+          "root": "code-skills",
+          "path": "implementations/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/model.py",
+          "sha256": "10f83169684d71b097d8e59a23ac5c905a6a04e247cbcd7bec9c83304dfc24b6",
+          "line": 107
+        }
+      },
+      "capability_id": "cap-662cfa6849d156fedc344552"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "classify-objects-by-language",
+      "description": "Language-conditioned attribute grounding with visual localization and bounded object placement.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_v1_classify_objects_by_language.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_v1_classify_objects_by_language/d1a86f0841981f1d/rdj_v1_classify_objects_by_language/model.py",
+          "sha256": "4ef1924c38373ce556edf487627d0af1a813c4c7ee3626f6c860c9a27d0d9de5"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "ee",
+      "source_observation_reads": [
+        {
+          "path": [
+            "state"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_classify_objects_by_language/d1a86f0841981f1d/rdj_v1_classify_objects_by_language/model.py",
+            "sha256": "4ef1924c38373ce556edf487627d0af1a813c4c7ee3626f6c860c9a27d0d9de5",
+            "line": 76
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        },
+        {
+          "path": [
+            "instruction"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_classify_objects_by_language/d1a86f0841981f1d/rdj_v1_classify_objects_by_language/model.py",
+            "sha256": "4ef1924c38373ce556edf487627d0af1a813c4c7ee3626f6c860c9a27d0d9de5",
+            "line": 76
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        },
+        {
+          "path": [
+            "vision"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_classify_objects_by_language/d1a86f0841981f1d/rdj_v1_classify_objects_by_language/model.py",
+            "sha256": "4ef1924c38373ce556edf487627d0af1a813c4c7ee3626f6c860c9a27d0d9de5",
+            "line": 76
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        }
+      ],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/9b66b6da2aa5def82b85617f3d2b0d05b53bd3a7b9fa2ccf6e118b46cec76412.json",
+            "sha256": "9b66b6da2aa5def82b85617f3d2b0d05b53bd3a7b9fa2ccf6e118b46cec76412"
+          },
+          "operation_ids": [
+            "classify_objects_by_language.action.record_and_emit",
+            "classify_objects_by_language.motion.acquire",
+            "classify_objects_by_language.motion.dequeue",
+            "classify_objects_by_language.motion.ensure_queue",
+            "classify_objects_by_language.motion.initialize_or_home",
+            "classify_objects_by_language.motion.place",
+            "classify_objects_by_language.motion.recover",
+            "classify_objects_by_language.observation.capture",
+            "classify_objects_by_language.vision.track"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_classify_objects_by_language/d1a86f0841981f1d/rdj_v1_classify_objects_by_language/model.py",
+            "sha256": "4ef1924c38373ce556edf487627d0af1a813c4c7ee3626f6c860c9a27d0d9de5"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "instruction_binding": {
+        "destination_assignment": "Parse explicit category mappings to left, middle, and right baskets from the instruction",
+        "parser_scope": "The shipped parser recognizes its declared category/basket grammar; unsupported paraphrases are not established",
+        "evidence": {
+          "root": "code-skills",
+          "path": "implementations/rdj_v1_classify_objects_by_language/d1a86f0841981f1d/rdj_v1_classify_objects_by_language/inventory.py",
+          "sha256": "58ed0e115f716ab5d189db05a26ff7d2dd49ff4e708c9ef4e4359980b24f9a55",
+          "line": 18
+        }
+      },
+      "capability_id": "cap-cef863cc3dad03997f950b92"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "cover-blocks",
+      "description": "Visual shape grounding and footprint-relative placement with reachable grasp control.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_cover_submission.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_cover_submission/a0acafc0950d028a/rdj_cover_submission/model.py",
+          "sha256": "a8e3ca718383a0f42f04ef090f59ff1381534b02a48593ef4cfabb5618cf8ae5"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        },
+        {
+          "id": "head_rgb_shape",
+          "predicate": "array_shape",
+          "path": [
+            "vision",
+            "cam_head",
+            "color"
+          ],
+          "shape": [
+            480,
+            640,
+            3
+          ],
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/perception.py",
+            "sha256": "0b48b8a5effed82dc25fa298391c3b990492dd906591933e44e86183ea33f42a",
+            "line": 39
+          },
+          "scope": "Image shape check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/6a7b1998804b2f0e0c2661a4a3f687daf3ea21fd1400365f4fd06f1c400b4710.json",
+            "sha256": "6a7b1998804b2f0e0c2661a4a3f687daf3ea21fd1400365f4fd06f1c400b4710"
+          },
+          "operation_ids": [
+            "motion.advance",
+            "motion.bind",
+            "motion.record",
+            "vision.geometry"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_cover_submission/a0acafc0950d028a/rdj_cover_submission/model.py",
+            "sha256": "a8e3ca718383a0f42f04ef090f59ff1381534b02a48593ef4cfabb5618cf8ae5"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "declared_source_constraints",
+        "rgb_qualified_instances": {
+          "red": 1,
+          "green": 1,
+          "blue": 1,
+          "cup": 3
+        },
+        "camera_geometry": "Fixed implementation calibration; not estimated per episode",
+        "silhouette_resource": "public_shapes.npz",
+        "evidence": [
+          {
+            "root": "code-skills",
+            "path": "implementations/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/perception.py",
+            "sha256": "0b48b8a5effed82dc25fa298391c3b990492dd906591933e44e86183ea33f42a",
+            "line": 8
+          },
+          {
+            "root": "code-skills",
+            "path": "implementations/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/perception.py",
+            "sha256": "0b48b8a5effed82dc25fa298391c3b990492dd906591933e44e86183ea33f42a",
+            "line": 51
+          }
+        ],
+        "sequence_support": {
+          "state": "Retains the initial RGB-derived color-to-position mapping and the original cover positions while the blocks are occluded.",
+          "placement_order": "Places the covers in the observed left-to-right block order.",
+          "retrieval_order": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "retrieval": "Returns each cover to its retained original position, then returns both arms home.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/model.py",
+            "sha256": "8898d7fd42d0b3959290d6b67bbb85822b8f4f837207dfad8413bd0c97843729"
+          }
+        }
+      },
+      "capability_id": "cap-47b995c8a0a96d7ba70e3578"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "deposit-coin",
+      "description": "RGB localization of a thin coin and a receiving slot, with direct or assisted grasp and insertion.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "deposit_policy.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/deposit_policy/80ab0f01212c0341/deposit_policy/model.py",
+          "sha256": "93ae38482ab5ff3fec5812864f28bf7c01ce5fb95d197481323939cd5eeba7cd"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [
+        {
+          "path": [
+            "state"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/deposit_policy/80ab0f01212c0341/deposit_policy/model.py",
+            "sha256": "93ae38482ab5ff3fec5812864f28bf7c01ce5fb95d197481323939cd5eeba7cd",
+            "line": 35
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        }
+      ],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/c4bf39e830e2646f60f316d114b2290c6d569bd4626a638856a4cdb0aeb1244c.json",
+            "sha256": "c4bf39e830e2646f60f316d114b2290c6d569bd4626a638856a4cdb0aeb1244c"
+          },
+          "operation_ids": [
+            "environment.batch",
+            "environment.single",
+            "episode.reset.core",
+            "episode.reset.state",
+            "motion.advance.batch",
+            "motion.advance.single",
+            "motion.bind.batch",
+            "motion.bind.single",
+            "motion.plan",
+            "observation.filter.batch",
+            "observation.filter.single",
+            "vision.observe.batch",
+            "vision.observe.single"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Derive the stage plan from current visual geometry and robot state, preserving the declared operation order and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/deposit_policy/80ab0f01212c0341/deposit_policy/model.py",
+            "sha256": "93ae38482ab5ff3fec5812864f28bf7c01ce5fb95d197481323939cd5eeba7cd"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-dec86adf1a79c766cfa5e3c9",
+      "observation_cues": [
+        "The manipulated object is a thin coin and the receiving geometry is a narrow slot."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "The manipulated object is a thin coin and the receiving geometry is a narrow slot."
+        ],
+        "unsupported": [
+          "The coin grasp and insertion geometry does not support bottles or disposal into a large open container."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "general-pickup",
+      "description": "Instruction-grounded object localization with appearance-conditioned grasp and reachable lifting.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_rgb_adapters.general_pickup",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_rgb_adapters/15bdea06cf71ed2e/rdj_rgb_adapters/general_pickup.py",
+          "sha256": "c76014a08ed84f698e44da7abc71ff66231fab4b07129b73e95e7f6e77246e12"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [
+        {
+          "path": [
+            "state"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_rgb_adapters/15bdea06cf71ed2e/rdj_rgb_adapters/general_pickup.py",
+            "sha256": "c76014a08ed84f698e44da7abc71ff66231fab4b07129b73e95e7f6e77246e12",
+            "line": 128
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        }
+      ],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/9686404d0af9ff09ea63658da015f4920cc589e952d1c1647833f068711a03ed.json",
+            "sha256": "9686404d0af9ff09ea63658da015f4920cc589e952d1c1647833f068711a03ed"
+          },
+          "operation_ids": [
+            "episode.reset.core",
+            "episode.reset.state",
+            "memory.bind_pending.batch",
+            "memory.bind_pending.single",
+            "motion.advance.batch",
+            "motion.advance.single",
+            "motion.bind",
+            "motion.resolve",
+            "state.capture",
+            "vision.observe.batch",
+            "vision.observe.single"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_rgb_adapters/15bdea06cf71ed2e/rdj_rgb_adapters/general_pickup.py",
+            "sha256": "c76014a08ed84f698e44da7abc71ff66231fab4b07129b73e95e7f6e77246e12"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-1719c9e57c209c2c59518d1f"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "insert-key",
+      "description": "RGB key-shaft and lock-aperture grounding with wrist possession checks, bimanual handover, alignment, insertion and bounded rotation.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "insert_key.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/insert_key/cf205b4840295111/insert_key/model.py",
+          "sha256": "543ef6d03429b920eede63eefef89407eb21b1f0c9e929de4ccd94e693bc2bb5"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "ee",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/8c553b24f5af3fb5cef4b89c729ab43d6ef7c8564739d75c07e66e7f85bcb760.json",
+            "sha256": "8c553b24f5af3fb5cef4b89c729ab43d6ef7c8564739d75c07e66e7f85bcb760"
+          },
+          "operation_ids": [
+            "Model.act.evidence.capture_image",
+            "Model.act.evidence.record_and_advance",
+            "Model.act.motion.emit_action",
+            "Model.act.observation.capture",
+            "Model.act.planning.transition_constraints",
+            "Model.act.state.restore_phase",
+            "Model.act.vision.initialize_key_estimate",
+            "Model.get_action.execution.advance",
+            "Model.get_action_batch.execution.advance",
+            "Model.on_trial_end.episode.reset",
+            "Model.prepare_case.episode.reset",
+            "Model.update_obs.observation.ingest",
+            "Model.update_obs_batch.observation.ingest"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/insert_key/cf205b4840295111/insert_key/model.py",
+            "sha256": "543ef6d03429b920eede63eefef89407eb21b1f0c9e929de4ccd94e693bc2bb5"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-0cdcbc3a4bc75bd851423d8c",
+      "observation_cues": [
+        "A visible key shaft and lock aperture ground the grasp and insertion geometry.",
+        "The skill tracks source and receiver grippers through handover and checks key possession in wrist RGB before insertion."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "Supported key and lock geometry with reachable source and receiver grasps."
+        ],
+        "unsupported": [
+          "Coin-slot insertion and arbitrary tool storage use different geometry and contact models."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "insert-tubes",
+      "description": "RGB tube and rack-slot localization with reachable assignment, alignment refresh, insertion and release.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_rgb_adapters.insert_tubes",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_rgb_adapters/74d3d956ca4277bb/rdj_rgb_adapters/insert_tubes.py",
+          "sha256": "2beff0202299d1db23c69c7ca60ef8882b74c578bf8b0514a7f15b18fbde9e02"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/67773b96a44df2b2ddd5a4b26a15f20a03e0ac9a222e45c93b62bef59b6eec56.json",
+            "sha256": "67773b96a44df2b2ddd5a4b26a15f20a03e0ac9a222e45c93b62bef59b6eec56"
+          },
+          "operation_ids": [
+            "InsertPolicy._envelope.motion.build_envelope",
+            "InsertPolicy._envelope.observation.robot_state",
+            "InsertPolicy._envelope.planning.initialize_insertion",
+            "InsertPolicy._envelope.planning.refine_from_observation",
+            "InsertPolicy._observe.observation.sanitize_and_store",
+            "InsertPolicy._observe.vision.observe",
+            "InsertPolicy.get_action.execution.advance",
+            "InsertPolicy.get_action.motion.bind",
+            "InsertPolicy.get_action_batch.execution.advance_batch",
+            "InsertPolicy.get_action_batch.motion.bind_batch",
+            "InsertPolicy.on_trial_end.episode.reset",
+            "InsertPolicy.prepare_case.episode.reset",
+            "InsertPolicy.reset.episode.clear_memory",
+            "InsertPolicy.reset.episode.reset_perception_executor",
+            "InsertPolicy.update_obs.observation.ingest",
+            "InsertPolicy.update_obs_batch.observation.ingest"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_rgb_adapters/74d3d956ca4277bb/rdj_rgb_adapters/insert_tubes.py",
+            "sha256": "2beff0202299d1db23c69c7ca60ef8882b74c578bf8b0514a7f15b18fbde9e02"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-901a5e96c896304255c56e80",
+      "observation_cues": [
+        "Visible tube bodies and caps provide directed axes; a tube rack provides receiving slots."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "Tube geometry and rack slots must be recoverable by the RGB tube-and-rack detector."
+        ],
+        "unsupported": [
+          "The perception model does not localize arbitrary hand tools or toolbox compartments."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "make-kong",
+      "description": "RGB matching of marked tiles across a newly observed discard and a retained row, followed by contact, transfer and upright placement.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_kong.submission",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_kong/b44fea680452539a/rdj_kong/submission.py",
+          "sha256": "a0cd113ce8a7fd08d65721c0fc58d23d1425237a956227dfb8f45dea46d52671"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/9f86e2c6de9fa323df12fa31d274ea830d6d461ea29ab76d863db467181a8288.json",
+            "sha256": "9f86e2c6de9fa323df12fa31d274ea830d6d461ea29ab76d863db467181a8288"
+          },
+          "operation_ids": [
+            "motion.commit",
+            "motion.intent",
+            "motion.solve"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_kong/b44fea680452539a/rdj_kong/submission.py",
+            "sha256": "a0cd113ce8a7fd08d65721c0fc58d23d1425237a956227dfb8f45dea46d52671"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-c8a37e06bb6ee76f9f0957c8",
+      "observation_cues": [
+        "Maintains its own initial-image reference and waits for a visually bound discard; an event that has not happened at episode start does not require an external history model.",
+        "Visual matching binds marked tile faces before contact."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "Maintains its own initial-image reference and waits for a visually bound discard; an event that has not happened at episode start does not require an external history model.",
+          "Visual matching binds marked tile faces before contact."
+        ],
+        "unsupported": [
+          "Requires the supported tile-row geometry and visual symbol reader; does not provide arbitrary object matching."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "play-tic-tac-toe",
+      "description": "Board-state grounding with reachable cell selection and staged end-effector placement.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_tic.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_tic/160f6e1b5c00bc22/rdj_tic/model.py",
+          "sha256": "3f3efc0940e55724b9e6b49e96e12122b5f093ecdaf72740f76df8a8d8e5dde3"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "ee",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/758c57f243b372385001298e761a7c57deca216ad6cbc148a78d35066774fb74.json",
+            "sha256": "758c57f243b372385001298e761a7c57deca216ad6cbc148a78d35066774fb74"
+          },
+          "operation_ids": [
+            "Model._act.execution.advance_or_wait",
+            "Model._act.memory.commit_move_and_emit",
+            "Model._act.memory.initialize_board_episode",
+            "Model._act.motion.build_hold",
+            "Model._act.motion.compile_trajectory",
+            "Model._act.motion.compute_grasp_and_placement",
+            "Model._act.observation.capture",
+            "Model._act.planning.select_move",
+            "Model._act.vision.track_board",
+            "Model.act.evidence.compute_residuals",
+            "Model.act.evidence.record_action",
+            "Model.act.execution.advance",
+            "Model.act.state.capture_action_context",
+            "Model.get_action.execution.advance",
+            "Model.get_action_batch.execution.advance",
+            "Model.reset.episode.reset",
+            "Model.update_obs.observation.ingest",
+            "Model.update_obs_batch.observation.ingest"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_tic/160f6e1b5c00bc22/rdj_tic/model.py",
+            "sha256": "3f3efc0940e55724b9e6b49e96e12122b5f093ecdaf72740f76df8a8d8e5dde3"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-8bbf72680c3c1ddc6bf712b8"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "plug-in-charger",
+      "description": "Connector-socket geometry grounding with grasp, handoff, alignment, and contact control.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_rgb_adapters.plug_in_charger",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_rgb_adapters/b44c4d1c2d7ace45/rdj_rgb_adapters/plug_in_charger.py",
+          "sha256": "85513a85687eff20af5c83ebe7df4cc664e398b6f8fb86f2094fa7528ab19c58"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [
+        {
+          "path": [
+            "state"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_rgb_adapters/b44c4d1c2d7ace45/rdj_rgb_adapters/plug_in_charger.py",
+            "sha256": "85513a85687eff20af5c83ebe7df4cc664e398b6f8fb86f2094fa7528ab19c58",
+            "line": 48
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        },
+        {
+          "path": [
+            "vision"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_rgb_adapters/b44c4d1c2d7ace45/rdj_rgb_adapters/plug_in_charger.py",
+            "sha256": "85513a85687eff20af5c83ebe7df4cc664e398b6f8fb86f2094fa7528ab19c58",
+            "line": 52
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        }
+      ],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/d512f2d37f7305e14f7418adef071d29c79cc3a3c2839745f09faa79c7587edf.json",
+            "sha256": "d512f2d37f7305e14f7418adef071d29c79cc3a3c2839745f09faa79c7587edf"
+          },
+          "operation_ids": [
+            "batch.advance",
+            "batch.emit",
+            "batch.plan",
+            "motion.advance",
+            "motion.interlock",
+            "motion.plan_bind"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_rgb_adapters/b44c4d1c2d7ace45/rdj_rgb_adapters/plug_in_charger.py",
+            "sha256": "85513a85687eff20af5c83ebe7df4cc664e398b6f8fb86f2094fa7528ab19c58"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-a65b73a466e0f949601a68fe"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "pour-balls-into-vase",
+      "description": "Container-opening grounding with geometry-ranked grasp, supported transfer, and tilt control.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "PourBallsRGB.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/PourBallsRGB/82ff12a1d0edb44b/PourBallsRGB/model.py",
+          "sha256": "53733d4aed99c4a4aea236106f64a4da557ab5e54a76c1ae236d20c59fef80aa"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/ce6ccd7d2c1f9cadd6bae89a359ef87e4734663cf42b9ad62d8199b9a7aba5f3.json",
+            "sha256": "ce6ccd7d2c1f9cadd6bae89a359ef87e4734663cf42b9ad62d8199b9a7aba5f3"
+          },
+          "operation_ids": [
+            "observation.commit",
+            "vision.bind",
+            "vision.schedule"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/PourBallsRGB/82ff12a1d0edb44b/PourBallsRGB/model.py",
+            "sha256": "53733d4aed99c4a4aea236106f64a4da557ab5e54a76c1ae236d20c59fef80aa"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "declared_source_constraints",
+        "source_container": "An open cup localized from RGB with the supported cup shape reference.",
+        "receiving_geometry": "A vase opening localized from RGB and fitted against the available vase shape references; mouth center, aperture and wall clearance are computed from the fitted geometry.",
+        "motion": "Grasp and transfer the cup, align its lip with the receiving opening, and tilt through staged poses. Candidate motions are checked for inverse-kinematics residuals and clearance.",
+        "limits": [
+          "Requires supported cup and vase geometry; does not establish arbitrary-container support.",
+          "No individual ball tracking or independent empty-container verification is declared."
+        ],
+        "evidence": [
+          {
+            "root": "code-skills",
+            "path": "implementations/PourBallsRGB/82ff12a1d0edb44b/PourBallsRGB/model.py",
+            "sha256": "53733d4aed99c4a4aea236106f64a4da557ab5e54a76c1ae236d20c59fef80aa",
+            "line": 77
+          },
+          {
+            "root": "code-skills",
+            "path": "implementations/PourBallsRGB/82ff12a1d0edb44b/PourBallsRGB/model.py",
+            "sha256": "53733d4aed99c4a4aea236106f64a4da557ab5e54a76c1ae236d20c59fef80aa",
+            "line": 124
+          }
+        ]
+      },
+      "capability_id": "cap-fd9d7a2d3b6cd0a2cad4b788"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "pour-by-language",
+      "description": "Container transfer selected from language-specified source and destination relations, such as color, ordinal, or named roles, with tilt control.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "pour_by_language.XPolicyLab.policy.pbl_rgb.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/pour_by_language/b50c0200475f3dc6/pour_by_language/XPolicyLab/policy/pbl_rgb/model.py",
+          "sha256": "545bde45b527d5b3e7f039865e55f24d192106be30312931b9384af98ed6ff14"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/bf3da69cd47bf99a8cd7f4370ef6a5b96831ff05debda4d75d1b9008e8f4141a.json",
+            "sha256": "bf3da69cd47bf99a8cd7f4370ef6a5b96831ff05debda4d75d1b9008e8f4141a"
+          },
+          "operation_ids": [
+            "motion.commit",
+            "motion.visual_gates",
+            "vision.initialize"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/pour_by_language/b50c0200475f3dc6/pour_by_language/XPolicyLab/policy/pbl_rgb/model.py",
+            "sha256": "545bde45b527d5b3e7f039865e55f24d192106be30312931b9384af98ed6ff14"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-a0cc44739db5a3fc25487ac4"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "pour-liquid-into-cup",
+      "description": "Direct bottle or spout to cup transfer from visually observed container geometry, with grasp, tilt, and restoration control.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_pour.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_pour/2a7b80f914e85dd1/rdj_pour/model.py",
+          "sha256": "662f871a3733a282f70f5b80596203f0f9460e5db826199279197f228a6c1c33"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "ee",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/0c2221432040e2dbbba0d13944de420a18d93f292522323154f03fbde431a80c.json",
+            "sha256": "0c2221432040e2dbbba0d13944de420a18d93f292522323154f03fbde431a80c"
+          },
+          "operation_ids": [
+            "motion.bind",
+            "motion.envelopes",
+            "vision.plan"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_pour/2a7b80f914e85dd1/rdj_pour/model.py",
+            "sha256": "662f871a3733a282f70f5b80596203f0f9460e5db826199279197f228a6c1c33"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-601eb7551b2f0d369ae9b592"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "press-by-number",
+      "description": "Visual symbol grounding with bounded counted contact and confirmation control.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_rgb_adapters.press_by_number",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_rgb_adapters/160145dec2259859/rdj_rgb_adapters/press_by_number.py",
+          "sha256": "4a8b77a2f49eac651843c144fd1a4ddf116f88d6967bfb009aeaee59f0b72c04"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "ee",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/16fccad908b0b768f6c43ba67e9f4f202d66f54242ffbe0ce671ffad9b06e3d6.json",
+            "sha256": "16fccad908b0b768f6c43ba67e9f4f202d66f54242ffbe0ce671ffad9b06e3d6"
+          },
+          "operation_ids": [
+            "CapPolicy._maybe_advance_policy.execution.check_completion",
+            "CapPolicy._maybe_advance_policy.memory.advance_goal",
+            "CapPolicy._maybe_advance_policy.motion.compile_and_start",
+            "CapPolicy._next_action.execution.advance",
+            "CapPolicy._observe.memory.observe_contact",
+            "CapPolicy._observe.observation.robot_state",
+            "CapPolicy._observe.planning.advance_if_complete",
+            "CapPolicy._observe.vision.initialize_number_memory",
+            "CapPolicy._open_slot.memory.decode_goal",
+            "CapPolicy._open_slot.motion.compile_and_start",
+            "CapPolicy.get_action.execution.advance",
+            "CapPolicy.get_action_batch.execution.advance",
+            "CapPolicy.on_trial_end.episode.reset",
+            "CapPolicy.prepare_case.episode.reset",
+            "CapPolicy.reset.episode.reset",
+            "CapPolicy.update_obs.observation.ingest",
+            "CapPolicy.update_obs_batch.observation.ingest"
+          ]
+        },
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/a99cb99677913cb2f3b0c169f93ab75b9455bde5005dfee0394ea2dcd98cf838.json",
+            "sha256": "a99cb99677913cb2f3b0c169f93ab75b9455bde5005dfee0394ea2dcd98cf838"
+          },
+          "operation_ids": [
+            "Model._trace.evidence.record",
+            "Model.get_action.execution.advance",
+            "Model.get_action_batch.execution.advance",
+            "Model.on_trial_end.episode.reset",
+            "Model.prepare_case.episode.reset",
+            "Model.reset.episode.reset",
+            "Model.update_obs.observation.ingest",
+            "Model.update_obs_batch.observation.ingest"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_rgb_adapters/160145dec2259859/rdj_rgb_adapters/press_by_number.py",
+            "sha256": "4a8b77a2f49eac651843c144fd1a4ddf116f88d6967bfb009aeaee59f0b72c04"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-7943a204ea6e3677256ad743"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "push-t",
+      "description": "RGB pose tracking and direct planar contact control for a T-shaped object and its target pose.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_push_submission.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_push_submission/8396ae3b355aa65d/rdj_push_submission/model.py",
+          "sha256": "a3f589ab717cfeb172ef65aaeb8f433722aded5207ee095c8e84956e9ddbe048"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/1f06a8a2194b2e57ab74e82931f5a316621b3fff4a8b6a28bb35f58d263181fe.json",
+            "sha256": "1f06a8a2194b2e57ab74e82931f5a316621b3fff4a8b6a28bb35f58d263181fe"
+          },
+          "operation_ids": [
+            "motion.advance.batch",
+            "motion.advance.single",
+            "motion.bind.batch",
+            "motion.bind.single",
+            "motion.plan_or_refine",
+            "observation.validate",
+            "vision.track"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_push_submission/8396ae3b355aa65d/rdj_push_submission/model.py",
+            "sha256": "a3f589ab717cfeb172ef65aaeb8f433722aded5207ee095c8e84956e9ddbe048"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-35ac55d4c9541ea5227ea3e7",
+      "observation_cues": [
+        "A T-shaped planar object and its target pose must be observable."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "A T-shaped planar object and its target pose must be observable."
+        ],
+        "unsupported": [
+          "Does not implement straightedge grasping or tool-mediated alignment of multiple blocks."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "solve-equation",
+      "description": "Visual symbol and relation grounding with constrained selection and geometric placement.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_equation.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_equation/37e48efe180a01c1/rdj_equation/model.py",
+          "sha256": "2469c0210d28068cf23434666dca2b77fdeeeb94db724961b8cb7d3f24ebe124"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/646cffedcabbf94ae9f31b6b4610c97ca794df1c1be983eb7314fcfdde7c9427.json",
+            "sha256": "646cffedcabbf94ae9f31b6b4610c97ca794df1c1be983eb7314fcfdde7c9427"
+          },
+          "operation_ids": [
+            "solve_equation.geometry.grasp_frame",
+            "solve_equation.motion.qualify_and_bind",
+            "solve_equation.vision.symbol_and_target"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_equation/37e48efe180a01c1/rdj_equation/model.py",
+            "sha256": "2469c0210d28068cf23434666dca2b77fdeeeb94db724961b8cb7d3f24ebe124"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-4997f525c1727b149503aa26"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "sort-nesting-dolls-by-size",
+      "description": "Visual size grounding and ordering with reachable grasp and staged placement.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "sort_nesting_dolls.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/sort_nesting_dolls/73180bfd0621b79e/sort_nesting_dolls/model.py",
+          "sha256": "bb18b8cd3d6c4ccc5003340c731d7064d9c146d70834fb7c0589017fc806ac1c"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/aa6f9620e8c9be4f97c6320a7444971c3d10ef93abfc0a279da04b06311f4961.json",
+            "sha256": "aa6f9620e8c9be4f97c6320a7444971c3d10ef93abfc0a279da04b06311f4961"
+          },
+          "operation_ids": [
+            "sort_nesting_dolls_by_size.action.record_and_emit",
+            "sort_nesting_dolls_by_size.motion.interpolate",
+            "sort_nesting_dolls_by_size.motion.track_and_advance",
+            "sort_nesting_dolls_by_size.vision.initialize_or_acquire"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/sort_nesting_dolls/73180bfd0621b79e/sort_nesting_dolls/model.py",
+            "sha256": "bb18b8cd3d6c4ccc5003340c731d7064d9c146d70834fb7c0589017fc806ac1c"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-223ffc4f4bbf394f4681a59c"
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "stack-blocks-by-language",
+      "description": "RGB grounding of three explicitly ordered colors, with bottom-to-top block placement and visual tracking.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_v1_stack_blocks_by_language.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_v1_stack_blocks_by_language/751bac6645394afc/rdj_v1_stack_blocks_by_language/model.py",
+          "sha256": "a2db4df53b20c06b44ce7ac45f9a6d0f5f1fb3967ee6352015545d57516614c4"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [
+        {
+          "path": [
+            "instruction"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_stack_blocks_by_language/751bac6645394afc/rdj_v1_stack_blocks_by_language/model.py",
+            "sha256": "a2db4df53b20c06b44ce7ac45f9a6d0f5f1fb3967ee6352015545d57516614c4",
+            "line": 73
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        },
+        {
+          "path": [
+            "state"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_stack_blocks_by_language/751bac6645394afc/rdj_v1_stack_blocks_by_language/model.py",
+            "sha256": "a2db4df53b20c06b44ce7ac45f9a6d0f5f1fb3967ee6352015545d57516614c4",
+            "line": 73
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        },
+        {
+          "path": [
+            "vision"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_stack_blocks_by_language/751bac6645394afc/rdj_v1_stack_blocks_by_language/model.py",
+            "sha256": "a2db4df53b20c06b44ce7ac45f9a6d0f5f1fb3967ee6352015545d57516614c4",
+            "line": 73
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        }
+      ],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/3f239c6763c4acb4b7d1ffc248b257435186d61a670332cd42f6c7abaef6fc4f.json",
+            "sha256": "3f239c6763c4acb4b7d1ffc248b257435186d61a670332cd42f6c7abaef6fc4f"
+          },
+          "operation_ids": [
+            "stack_blocks_by_language.action.assemble_and_record",
+            "stack_blocks_by_language.motion.advance_and_convert",
+            "stack_blocks_by_language.scene.envelopes",
+            "stack_blocks_by_language.vision.batch"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_v1_stack_blocks_by_language/751bac6645394afc/rdj_v1_stack_blocks_by_language/model.py",
+            "sha256": "a2db4df53b20c06b44ce7ac45f9a6d0f5f1fb3967ee6352015545d57516614c4"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-721863e552985d6d292cab34",
+      "execution_scope": {
+        "requirements": [
+          "The instruction must explicitly specify three distinct block colors in bottom-to-top order.",
+          "Supported color vocabulary: blue, green, red, yellow, orange, cyan.",
+          "The current parser requires its declared ordered-color instruction grammar; generic stacking requests do not provide a valid color binding."
+        ],
+        "unsupported": [
+          "An unspecified stacking order, shape-based ordering, bowl stacking, or arbitrary instruction paraphrases."
+        ],
+        "evidence": {
+          "root": "code-skills",
+          "path": "implementations/rdj_v1_stack_blocks_by_language/751bac6645394afc/rdj_v1_stack_blocks_by_language/language_rgb.py",
+          "sha256": "b2733426505da9a5d603be23d56b5db48dc2d03e3d7f7cd9debe5d09a84b61c2",
+          "line": 15
+        }
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "store-tools-in-toolbox",
+      "description": "RGB localization and orientation-preserving placement of a tape measure and pliers into visually registered toolbox recesses.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_store_tools.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_store_tools/65839747fdb3fe17/rdj_store_tools/model.py",
+          "sha256": "aa30544c987b5a89a24d7d8b8478cd76d2e8470f4354c48807c2268b8da79325"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "ee",
+      "source_observation_reads": [
+        {
+          "path": [
+            "vision"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_store_tools/65839747fdb3fe17/rdj_store_tools/model.py",
+            "sha256": "aa30544c987b5a89a24d7d8b8478cd76d2e8470f4354c48807c2268b8da79325",
+            "line": 46
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        },
+        {
+          "path": [
+            "state"
+          ],
+          "source": {
+            "root": "code-skills",
+            "path": "implementations/rdj_store_tools/65839747fdb3fe17/rdj_store_tools/model.py",
+            "sha256": "aa30544c987b5a89a24d7d8b8478cd76d2e8470f4354c48807c2268b8da79325",
+            "line": 46
+          },
+          "status": "observed_source_read; conditionality_not_inferred"
+        }
+      ],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/65de79cf2a28c814bdc987bc64d1f7c977cf066f1a2f0f5d8fb84093a6270408.json",
+            "sha256": "65de79cf2a28c814bdc987bc64d1f7c977cf066f1a2f0f5d8fb84093a6270408"
+          },
+          "operation_ids": [
+            "store_tools_in_toolbox.action.emit",
+            "store_tools_in_toolbox.motion.bind_stages",
+            "store_tools_in_toolbox.motion.check_progress",
+            "store_tools_in_toolbox.motion.ensure_plan",
+            "store_tools_in_toolbox.motion.interpolate",
+            "store_tools_in_toolbox.motion.qualify_candidates",
+            "store_tools_in_toolbox.vision.tool_targets"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_store_tools/65839747fdb3fe17/rdj_store_tools/model.py",
+            "sha256": "aa30544c987b5a89a24d7d8b8478cd76d2e8470f4354c48807c2268b8da79325"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-b74a38d888f520cb48527f20",
+      "execution_scope": {
+        "requirements": [
+          "A toolbox matching the supplied empty-box RGB template, with visually registered recesses.",
+          "The perception implementation detects a yellow tape measure and pliers."
+        ],
+        "unsupported": [
+          "Arbitrary objects and unstructured open boxes are outside the supported perception and placement geometry."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "swap-t",
+      "description": "RGB tracking and grasp transfer of two T-shaped objects, retaining their initial poses through an intermediate placement.",
+      "implementation": {
+        "kind": "code-policy",
+        "module": "rdj_swap_t.model",
+        "class_name": "Model",
+        "source": {
+          "root": "code-skills",
+          "path": "implementations/rdj_swap_t/14d69d4d118fb34d/rdj_swap_t/model.py",
+          "sha256": "c61bf76e5139992d85ea948e4160ec77f9cf73f236728628a4888acf6624cb70"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [
+        {
+          "source": {
+            "root": "code-skills",
+            "path": "memory/da016406d664a903c654239cee47f8f4349e3871a2975e9e32136d3f5d866efb.json",
+            "sha256": "da016406d664a903c654239cee47f8f4349e3871a2975e9e32136d3f5d866efb"
+          },
+          "operation_ids": [
+            "motion.emit",
+            "motion.stage_gate",
+            "vision.initialize"
+          ]
+        }
+      ],
+      "capability_limits": [
+        {
+          "statement": "Execute the declared operations with their configured parameters and implementation bindings.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          }
+        },
+        {
+          "statement": "Observation fields referenced by the implementation.",
+          "evidence": {
+            "root": "code-skills",
+            "path": "implementations/rdj_swap_t/14d69d4d118fb34d/rdj_swap_t/model.py",
+            "sha256": "c61bf76e5139992d85ea948e4160ec77f9cf73f236728628a4888acf6624cb70"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "unspecified",
+        "meaning": "Match observed geometry to the operation requirements."
+      },
+      "capability_id": "cap-ad25159a6259844c91cc7346",
+      "observation_cues": [
+        "Stores initial object identities and orientations internally, then checks wrist attachment and placement geometry.",
+        "Requires two visible T-shaped objects and reachable intermediate placement space."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "Stores initial object identities and orientations internally, then checks wrist attachment and placement geometry.",
+          "Requires two visible T-shaped objects and reachable intermediate placement space."
+        ],
+        "unsupported": [
+          "Does not support arbitrary block shapes or direct planar pushing."
+        ]
+      }
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "pi05",
+      "description": "Instruction, RGB and robot-state conditioned joint-action inference.",
+      "implementation": {
+        "kind": "pi05",
+        "source": {
+          "root": "policy-runtime",
+          "path": "skills/pi05_backend.py",
+          "sha256": "991e13178c1527e04c7eb1e89e8524b59172eefe30b037bc654f8e59e3919bc0"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [],
+      "capability_limits": [
+        {
+          "statement": "Inference uses the registered checkpoint and normalization configuration.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skills/pi05_backend.py",
+            "sha256": "991e13178c1527e04c7eb1e89e8524b59172eefe30b037bc654f8e59e3919bc0"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "learned_model_domain"
+      },
+      "history": {
+        "causal": false,
+        "cross_environment_sharing": false
+      },
+      "capability_id": "cap-993a33b5623758d26dfa630a",
+      "observation_cues": [
+        "Conditions actions on the current RGB views, instruction and robot state; it does not maintain a visual history buffer."
+      ]
+    },
+    {
+      "schema": "physicalrsi.skill-capability-memory/v1",
+      "kind": "implementation_contract",
+      "skill_name": "pi05-sparse-memory",
+      "description": "Instruction, RGB and robot-state conditioned joint-action inference with causal per-environment visual history.",
+      "implementation": {
+        "kind": "pi05-sparse-memory",
+        "source": {
+          "root": "policy-runtime",
+          "path": "skills/sparse_backend.py",
+          "sha256": "bc7fac438b20243f6ea3d428ed5828fcc23a42e044c61456894cc7b1b8dd1d8b"
+        }
+      },
+      "input_contract": "robodojo.observation-batch/v1",
+      "output_contract": "robodojo.action-chunks/v1",
+      "action_representation": "joint",
+      "source_observation_reads": [],
+      "conditions": [
+        {
+          "id": "nonempty_instruction",
+          "predicate": "nonempty_string",
+          "path": [
+            "instruction"
+          ],
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skill_model.py",
+            "sha256": "27fbfb63bba0f9c05fa1b04fc03e843ee5124df11e727890187574d7ce76a8e1"
+          },
+          "scope": "Instruction input check.",
+          "advisory": true
+        }
+      ],
+      "operation_memory": [],
+      "capability_limits": [
+        {
+          "statement": "History starts at the first observation and grows during execution; observations before the episode remain unavailable.",
+          "evidence": {
+            "root": "policy-runtime",
+            "path": "skills/sparse_backend.py",
+            "sha256": "bc7fac438b20243f6ea3d428ed5828fcc23a42e044c61456894cc7b1b8dd1d8b"
+          }
+        }
+      ],
+      "geometry_support": {
+        "status": "learned_model_domain"
+      },
+      "history": {
+        "causal": true,
+        "cross_environment_sharing": false
+      },
+      "capability_id": "cap-5b265d3ad10f18d3138ad57d",
+      "observation_cues": [
+        "Builds causal visual history during execution, starting with the first observation; prior frames need not exist when the skill is selected.",
+        "History provides earlier visual context when the current view loses object identity, relative order or progress through occlusion or containment.",
+        "Repeated transfers, handovers or a long instruction alone do not establish missing visual information. If the relevant objects and progress remain observable in current RGB and robot state, temporal context is not required by that observation."
+      ]
+    }
+  ]
+}

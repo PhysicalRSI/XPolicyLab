@@ -1,4 +1,4 @@
-"""Reviewed code-policy example using only the declared primitive API."""
+"""Code-policy example using the primitive API."""
 
 from PhysicalRSI_core.infra.storage import digest
 
@@ -34,5 +34,5 @@ def describe() -> dict:
         "memory_mode": "task-scoped exploration memory",
         "qualification": False,
         "layout_access": False,
-        "scope": "reviewed example; native primitive execution required",
+        "scope": "primitive example; native primitive execution required",
     }

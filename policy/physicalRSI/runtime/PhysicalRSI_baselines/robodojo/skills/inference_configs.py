@@ -21,6 +21,8 @@ def get_config(name, checkpoint):
         name=name,
         model=pi0_config.Pi0Config(pi05=True),
         data=config.LeRobotAlohaDataConfig(
+            adapt_to_pi=False,
+            use_delta_joint_actions=True,
             repo_id='RoboDojo_sim_arx-x5_v30',
             assets=config.AssetsConfig(assets_dir=str(Path(checkpoint) / 'assets'), asset_id='arx_x5_sim'),
             repack_transforms=transforms.Group(inputs=[transforms.RepackTransform({
