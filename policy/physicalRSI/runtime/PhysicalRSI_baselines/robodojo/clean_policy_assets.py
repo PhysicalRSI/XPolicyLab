@@ -151,10 +151,18 @@ def rewrite_sources(source, destination):
     for original in (source / 'implementations').rglob('*.py'):
         path = destination / original.relative_to(source)
         relative = path.relative_to(destination / 'implementations')
-        # Neural/provider dependency trees are outside this code-policy cleanup.
-        if relative.parts[0] not in {'rdj_master', 'align_blocks_rgb_straightedge', 'rdj_pour',
+        # Include bundled legacy evaluation entrypoints, even when the public
+        # adapter does not invoke them. Keep provider inference trees untouched;
+        # this one reviewed provider module mixes inference helpers with an old
+        # evaluator callback, so extract only its evaluator-dependent definitions.
+        provider_evaluator = (relative.parts[0] == 'pi05_sparse_mem'
+                              and relative.parts[2:] == (
+                                  'pi05_sparse_mem', 'src', 'openpi', 'integrations',
+                                  'rmbench_sparse_memory.py'))
+        if not provider_evaluator and relative.parts[0] not in {'rdj_master', 'align_blocks_rgb_straightedge', 'rdj_pour',
                                      'rdj_v1_classify_objects_by_language', 'rdj_plug_policy',
-                                     'rdj_rgb_adapters', 'deposit_policy'}:
+                                     'rdj_rgb_adapters', 'deposit_policy', 'arrange_rgb',
+                                     'pour_by_language'}:
             continue
         content = original.read_text()
         module_parts = list(relative.parts[2:])

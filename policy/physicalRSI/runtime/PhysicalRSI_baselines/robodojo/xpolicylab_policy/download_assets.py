@@ -11,8 +11,8 @@ import urllib.request
 
 
 # A default release reference is replaceable; asset inventories belong to releases.
-DEFAULT_MANIFEST = 'https://github.com/PhysicalRSI/XPolicyLab/releases/download/physicalrsi-skill-assets-v2/assets.json'
-DEFAULT_MANIFEST_SHA256 = '19a627b6fd4768c1fad49b080ca85d45a0c267349a29b46fddfb8eec54d11638'
+DEFAULT_MANIFEST = 'https://github.com/PhysicalRSI/XPolicyLab/releases/download/physicalrsi-skill-assets-v3/assets.json'
+DEFAULT_MANIFEST_SHA256 = '82261671a7dc81a1aee28485de48f8391801f52381884c3a6122a9a2519246ee'
 
 
 def load_manifest(source, output, expected_sha256=None):
