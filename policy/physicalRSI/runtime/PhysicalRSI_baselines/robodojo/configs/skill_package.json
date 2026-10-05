@@ -24,9 +24,7 @@
     {
       "name": "code-policy",
       "implementation": "PhysicalRSI_baselines.robodojo.skills.code_policy",
-      "assets": [
-        "physicalrsi-code-skills"
-      ]
+      "assets": []
     }
   ],
   "weight_layout": "Checkpoint assets remain separate inputs to their skills.",

@@ -132,9 +132,7 @@ class AgentPlanner:
                 'Return JSON with exactly composition, operations, and rationale. Choose a '
                 'supplied composition name. For a composition without the operation library, '
                 'return an empty operations list. For the operation library, select exactly '
-                'one task-level memory entry and return its operation handle in operations. '
-                'Each entry binds capability constraints, execution-stage memory, and an '
-                'implementation. Select an entry when its declared capability covers the requested '
+                'one operation handle when its declared capability covers the requested '
                 'manipulation and its execution conditions fit the visible scene. Compare '
                 'the supplied capabilities by supported behavior, geometry and input/output '
                 'contracts. Current RGB availability is not a reason to prefer a learned '
@@ -182,41 +180,13 @@ class AgentPlanner:
                     or any(not isinstance(name, str) for name in plan['operations'])):
                 raise ValueError('Agent must return a bounded executable operation sequence')
             names = plan['operations']
-            if compositions is not None and plan.get('composition') not in compositions:
-                # Normalize known names; otherwise infer the library composition
-                # from valid operation handles or use the general visual fallback.
-                proposed = plan.get('composition')
-                normalized = proposed.strip() if isinstance(proposed, str) else ''
-                if normalized in compositions:
-                    plan = dict(plan, composition=normalized)
-                else:
-                    library_name = next((name for name, entry in compositions.items()
-                                         if isinstance(entry.get('steps'), list)
-                                         and entry['steps'][-1] == 'memory-program-library'), None)
-                    visual_name = next((name for name, entry in compositions.items()
-                                        if isinstance(entry.get('steps'), list)
-                                        and entry['steps'][-1] == 'pi05'), None)
-                    registry = operation_program['operations']
-                    if (library_name is not None and names
-                            and len(set(names)) == len(names)
-                            and all(name in registry for name in names)):
-                        plan = dict(plan, composition=library_name)
-                    elif visual_name is not None:
-                        plan = dict(plan, composition=visual_name, operations=[])
-                    else:
-                        raise ValueError('Agent operation plan contains an unknown composition')
             if compositions is not None:
+                if (not isinstance(plan.get('composition'), str)
+                        or plan['composition'] not in compositions):
+                    raise ValueError('Agent operation plan contains an unknown composition')
                 uses_library = compositions[plan['composition']]['steps'][-1] == 'memory-program-library'
                 if uses_library and not names:
-                    # Use the configured general visual skill when no operation
-                    # was supplied for the library composition.
-                    fallback = next((name for name, entry in compositions.items()
-                                     if isinstance(entry.get('steps'), list)
-                                     and entry['steps'][-1] == 'pi05'), None)
-                    if fallback is None:
-                        raise ValueError('Operation library requires an executable operation')
-                    plan = dict(plan, composition=fallback, operations=[])
-                    names = plan['operations']
+                    raise ValueError('Operation library requires an executable operation')
                 if not uses_library and names:
                     raise ValueError('Operations cannot be attached to an independent execution skill')
             if not names:

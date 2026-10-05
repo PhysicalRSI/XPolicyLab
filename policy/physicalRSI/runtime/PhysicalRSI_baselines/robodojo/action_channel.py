@@ -64,6 +64,7 @@ class ActionChannel:
             self._condition.wait(deadline - time.monotonic())
 
     def update_obs(self, observation):
+        # Whitelist observable joint fields; do not retain task score or layouts.
         state = validate_actions(
             [{key: observation["state"][key] for key in self.dimensions}],
             self.dimensions,

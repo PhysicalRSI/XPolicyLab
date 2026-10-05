@@ -121,13 +121,8 @@
   "failure_handling": [
     {
       "id": "failure.agent",
-      "trigger": "Missing credentials, failed API requests, invalid JSON, or an unrecoverable plan validation error",
+      "trigger": "Missing credentials, timeout, invalid JSON, or an unavailable composition",
       "response": "Stop before skill execution; retain the failure separately from task success or failure."
-    },
-    {
-      "id": "failure.plan",
-      "trigger": "An unknown composition name or an empty operation-library selection",
-      "response": "Normalize recognized composition names. For an unknown composition with valid operation handles, select the configured operation library. Otherwise use the configured general visual skill when available. Reject plans that remain invalid."
     },
     {
       "id": "failure.assets",

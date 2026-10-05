@@ -101,6 +101,31 @@ class Model:
         self.closed = False
         self.indices = []
 
+        # Load configured checkpoint-backed skills before the policy server is ready.
+        # The observation-dependent agent selects among ready implementations.
+        self.preloaded = {}
+        self.preloaded_plan_revisions = {}
+        try:
+            for name, entry in self.config['skills'].items():
+                if entry.get('implementation', name) not in {'pi05', 'pi05-sparse-memory'}:
+                    continue
+                descriptor = deepcopy(entry)
+                memories = descriptor['configuration'].get('operation_memories')
+                if memories:
+                    plan = dict(schema=OPERATION_PLAN_SCHEMA, episode='initialization',
+                                rationale='Initialize the registered immutable programs.', programs={
+                        revision: {method: program['steps'] for method, program in memory['programs'].items()}
+                        for revision, memory in memories.items()})
+                    environment = freeze_episode_plan(self.root / 'initialization' / name / 'operation-plan.json',
+                                                      plan, memories)
+                    descriptor['configuration'].setdefault('environment', {}).update(environment)
+                    self.preloaded_plan_revisions[name] = digest(plan)
+                self.preloaded[name] = load_skill(descriptor, self.deployment)
+        except BaseException:
+            for skill in self.preloaded.values():
+                skill.close()
+            raise
+
     def physicalrsi_identity(self):
         return deepcopy(self.identity)
 
@@ -120,7 +145,7 @@ class Model:
         episode = uuid.uuid4().hex
         atomic_json(self.root / 'episodes' / episode / 'agent-decision.json',
                     dict(env_idx=index, instruction=instruction, plan=plan,
-                         status='selected_before_implementation_load', **self.identity))
+                         status='selected_before_episode_binding', **self.identity))
         selected_operation = None
         if name == 'memory-guided-program-library':
             operations = plan.get('operations')
@@ -146,6 +171,8 @@ class Model:
         operation_plan_revision = None
         memories = descriptor['configuration'].get('operation_memories')
         if memories is not None:
+            # The sole agent choice binds the complete registered stage programs.
+            # It does not authorize modifying their numerical implementations.
             operation_plan = dict(schema=OPERATION_PLAN_SCHEMA, episode=episode,
                                   rationale=plan['rationale'], programs={
                 revision: {method: program['steps'] for method, program in memory['programs'].items()}
@@ -154,7 +181,7 @@ class Model:
                                               operation_plan, memories)
             descriptor['configuration'].setdefault('environment', {}).update(environment)
             operation_plan_revision = digest(operation_plan)
-        group_key = selected if name == 'memory-guided-program-library' else name
+        group_key = selected if name == 'memory-guided-program-library' or selected in self.preloaded else name
         group = self.groups.get(group_key)
         if group is None:
             group_id = uuid.uuid4().hex
@@ -167,7 +194,11 @@ class Model:
                                                   worker_plan, memories)
                 descriptor['configuration'].setdefault('environment', {}).update(environment)
                 worker_plan_revision = digest(worker_plan)
-            skill = load_skill(descriptor, self.deployment)
+            skill = self.preloaded.get(selected)
+            if skill is None:
+                skill = load_skill(descriptor, self.deployment)
+            else:
+                worker_plan_revision = self.preloaded_plan_revisions.get(selected)
             try:
                 group = dict(skill=skill, operation=compose_skill(group_key, skill, self.memory),
                              observer=compose_observer(group_key, skill, self.memory),
@@ -290,16 +321,32 @@ class Model:
     def reset(self):
         self.pending.clear()
         self.action_queues.clear()
+        failure = None
         for group in self.groups.values():
-            group['skill'].close()
+            skill = group['skill']
+            try:
+                if skill in self.preloaded.values():
+                    skill.reset()
+                else:
+                    skill.close()
+            except BaseException as error:
+                failure = failure or error
         self.groups.clear()
         self.sessions.clear()
         self.indices = []
-        self.failed = False
+        self.failed = failure is not None
+        if failure is not None:
+            raise failure
 
     def on_trial_end(self, result=None):
         return self.reset()
 
     def close(self):
-        self.reset()
-        self.closed = True
+        if self.closed:
+            return
+        try:
+            self.reset()
+        finally:
+            for skill in self.preloaded.values():
+                skill.close()
+            self.closed = True

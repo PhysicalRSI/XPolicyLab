@@ -26,7 +26,6 @@ yaml_file="${XPL_DEPLOY_YML:-${SCRIPT_DIR}/deploy.yml}"
 # RoboDojo invokes this script from the adapter directory. Leave it before
 # any helper that may start Python.
 cd "${XPL_ROOT}"
-action_dim=$(bash "${UTILS_DIR}/get_action_dim.sh" "${BENCH_ROOT}" "${env_cfg_type}")
 YAML_PYTHON="${PYTHON:-python3}"
 if [[ "${policy_uv_env}" == "uv" ]]; then
     policy_uv_env_path="$("${YAML_PYTHON}" - <<PY
@@ -75,5 +74,4 @@ exec env \
             env_cfg_type="${env_cfg_type}" \
             seed="${seed}" \
             policy_name="${policy_name}" \
-            action_type="${action_type}" \
-            action_dim="${action_dim}"
+            action_type="${action_type}"

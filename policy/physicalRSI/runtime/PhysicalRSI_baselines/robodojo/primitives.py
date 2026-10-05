@@ -123,7 +123,7 @@ class RoboDojoPrimitives:
             if any(x < 0 or x > 1 for x in state[side + "_ee_joint_state"]):
                 raise ValueError("Expected normalized gripper state in [0, 1]")
         self._check(deadline)
-        return state
+        return state  # Deliberate field projection; no scores, layouts or simulator objects.
 
     @staticmethod
     def _check(deadline):

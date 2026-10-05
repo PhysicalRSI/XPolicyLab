@@ -46,28 +46,28 @@ def configure(assets, *, python, output, evidence, endpoint, model, framework=No
         config['composition_definitions'] = {}
         program_registry = {}
         capability_names = {
-            'align-blocks': ('edge-alignment', 'RGB straightedge localization and tool-mediated contact alignment of multiple blocks.'),
+            'align-blocks': ('edge-alignment', 'Visual geometric grounding and bounded relative-pose alignment for rigid objects and tools.'),
             'arrange-largest-number-random': ('ordered-object-placement', 'Visual symbol grounding, ordering, and reachable object placement under observed geometry.'),
             'classify-objects': ('visual-attribute-placement', 'Visual attribute grounding with category-aware localization and bounded grasp-and-place control.'),
             'classify-objects-by-language': ('language-conditioned-placement', 'Language-conditioned attribute grounding with visual localization and bounded object placement.'),
             'cover-blocks': ('footprint-relative-placement', 'Visual shape grounding and footprint-relative placement with reachable grasp control.'),
-            'deposit-coin': ('opening-directed-transfer', 'RGB localization of a thin coin and a receiving slot, with direct or assisted grasp and insertion.'),
+            'deposit-coin': ('opening-directed-transfer', 'Small-object and opening geometry grounding with direct or assisted transfer control.'),
             'general-pickup': ('instruction-grounded-pickup', 'Instruction-grounded object localization with appearance-conditioned grasp and reachable lifting.'),
-            'insert-key': ('keyed-insertion', 'RGB key-shaft and lock-aperture grounding with wrist possession checks, bimanual handover, alignment, insertion and bounded rotation.'),
-            'insert-tubes': ('slot-insertion', 'RGB tube and rack-slot localization with reachable assignment, alignment refresh, insertion and release.'),
-            'make-kong': ('visual-match-press-place', 'RGB matching of marked tiles across a newly observed discard and a retained row, followed by contact, transfer and upright placement.'),
+            'insert-key': ('keyed-insertion', 'Two-object pose grounding with possession checks, alignment, insertion, and bounded contact control.'),
+            'insert-tubes': ('slot-insertion', 'Object-slot geometry grounding with reachable assignment, alignment refresh, and insertion release.'),
+            'make-kong': ('visual-match-press-place', 'Visual role matching with temporal identity binding, qualified contact, and upright placement.'),
             'play-tic-tac-toe': ('board-cell-placement', 'Board-state grounding with reachable cell selection and staged end-effector placement.'),
             'plug-in-charger': ('connector-alignment', 'Connector-socket geometry grounding with grasp, handoff, alignment, and contact control.'),
             'pour-balls-into-vase': ('vessel-transfer', 'Container-opening grounding with geometry-ranked grasp, supported transfer, and tilt control.'),
             'pour-by-language': ('language-conditioned-pour', 'Container transfer selected from language-specified source and destination relations, such as color, ordinal, or named roles, with tilt control.'),
             'pour-liquid-into-cup': ('spout-anchored-transfer', 'Direct bottle or spout to cup transfer from visually observed container geometry, with grasp, tilt, and restoration control.'),
             'press-by-number': ('counted-button-interaction', 'Visual symbol grounding with bounded counted contact and confirmation control.'),
-            'push-t': ('planar-object-push', 'RGB pose tracking and direct planar contact control for a T-shaped object and its target pose.'),
+            'push-t': ('planar-object-push', 'Planar object-target geometry grounding with reachable rotation and translation control.'),
             'solve-equation': ('symbol-selection-placement', 'Visual symbol and relation grounding with constrained selection and geometric placement.'),
             'sort-nesting-dolls-by-size': ('size-ordered-placement', 'Visual size grounding and ordering with reachable grasp and staged placement.'),
-            'stack-blocks-by-language': ('language-conditioned-stacking', 'RGB grounding of three explicitly ordered colors, with bottom-to-top block placement and visual tracking.'),
-            'store-tools-in-toolbox': ('oriented-container-placement', 'RGB localization and orientation-preserving placement of a tape measure and pliers into visually registered toolbox recesses.'),
-            'swap-t': ('identity-preserving-transfer', 'RGB tracking and grasp transfer of two T-shaped objects, retaining their initial poses through an intermediate placement.'),
+            'stack-blocks-by-language': ('language-conditioned-stacking', 'Language-conditioned order and relation grounding for labeled blocks, with staged block placement.'),
+            'store-tools-in-toolbox': ('oriented-container-placement', 'Object and container geometry grounding with orientation-preserving transport control.'),
+            'swap-t': ('identity-preserving-transfer', 'Visual identity tracking with qualified intermediate placement and identity-preserving transfer.'),
         }
         primitive_tags = {
             'align-blocks': ['visual_grounding', 'relative_pose', 'alignment_motion'],
@@ -105,7 +105,9 @@ def configure(assets, *, python, output, evidence, endpoint, model, framework=No
                     raise ValueError('Code dependency changed: ' + path)
             if name in config['skills']:
                 raise ValueError('Duplicate skill: ' + name)
-            # Register each executable implementation and its library operation.
+            # Keep implementations available as skills for inspection and
+            # compatibility. Only the generic library below is an agent
+            # composition, so these names are not offered as task choices.
             config['skills'][name] = {'name': name, 'implementation': 'code-policy',
                                       'configuration': settings}
             operation_name, description = capability_names.get(name, (name, entry['description']))
@@ -121,7 +123,9 @@ def configure(assets, *, python, output, evidence, endpoint, model, framework=No
                 'configuration': settings,
             }
         if program_registry:
-            # Expose the library as one composition with selectable operations.
+            # The agent receives one operation library.  Individual programs remain
+            # immutable implementation memories inside that library and are resolved
+            # only after the agent has returned a contract-checked operation plan.
             config['program_registry'] = program_registry
             composition = 'memory-guided-program-library'
             config['composition_definitions'][composition] = {

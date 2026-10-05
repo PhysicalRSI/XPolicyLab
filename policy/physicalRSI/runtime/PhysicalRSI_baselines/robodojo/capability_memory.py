@@ -17,6 +17,8 @@ def _validate(entry):
     expected = 'cap-' + hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:24]
     if entry.get('capability_id') != expected:
         raise ValueError('Capability memory identity mismatch')
+    if entry.get('provenance') != {'type': 'implementation_inspection', 'rollout_derived': False}:
+        raise ValueError('Unsupported capability provenance')
     if (entry.get('input_contract') != 'robodojo.observation-batch/v1'
             or entry.get('output_contract') != 'robodojo.action-chunks/v1'):
         raise ValueError('Unsupported capability interface')

@@ -50,7 +50,10 @@ def _is_direct_url(url: str) -> bool:
 
 
 def _from_json(obj: Any) -> Any:
-    """Rehydrate ``{"__ndarray__": <b64>, "dtype": ..., "shape": [...]}``"""
+    """Rehydrate ``{"__ndarray__": <b64>, "dtype": ..., "shape": [...]}``
+    back into ndarrays and ``{"__npscalar__": <value>, "dtype": ...}``
+    back into numpy scalars. Everything else is passed through unchanged.
+    """
     if isinstance(obj, dict):
         if "__ndarray__" in obj and set(obj) <= {"__ndarray__", "dtype", "shape"}:
             raw = base64.b64decode(obj["__ndarray__"])
